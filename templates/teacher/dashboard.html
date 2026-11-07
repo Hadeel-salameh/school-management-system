@@ -1,0 +1,228 @@
+{% extends "dashboard_layout.html" %}
+
+{% block title %}لوحة المعلم{% endblock %}
+
+{% block sidebar_user_info %}
+    <span class="user-name">{{ teacher.arabic_name or teacher.full_name }}</span>
+    <span class="user-role">{{ teacher.specialization or 'معلم' }}</span>
+{% endblock %}
+
+{% block sidebar_nav %}
+<span class="nav-section-title">القائمة الرئيسية</span>
+<a href="{{ url_for('teacher_dashboard') }}" class="sidebar-link active">
+    <div class="link-icon"><i class="bi bi-speedometer2"></i></div><span>الرئيسية</span>
+</a>
+<a href="{{ url_for('teacher_students') }}" class="sidebar-link">
+    <div class="link-icon"><i class="bi bi-people-fill"></i></div><span>الطلاب</span>
+</a>
+<a href="{{ url_for('teacher_grades') }}" class="sidebar-link">
+    <div class="link-icon"><i class="bi bi-journal-text"></i></div><span>الدرجات والطلاب</span>
+</a>
+<a href="{{ url_for('teacher_attendance') }}" class="sidebar-link">
+    <div class="link-icon"><i class="bi bi-calendar-check-fill"></i></div><span>الحضور والغياب</span>
+</a>
+<a href="{{ url_for('teacher_assignments') }}" class="sidebar-link">
+    <div class="link-icon"><i class="bi bi-file-earmark-text-fill"></i></div><span>الواجبات</span>
+</a>
+<a href="{{ url_for('teacher_exams') }}" class="sidebar-link">
+    <div class="link-icon"><i class="bi bi-clipboard-fill"></i></div><span>الاختبارات</span>
+</a>
+<span class="nav-section-title">أخرى</span>
+<a href="{{ url_for('index') }}" class="sidebar-link">
+    <div class="link-icon"><i class="bi bi-house-fill"></i></div><span>الموقع الرئيسي</span>
+</a>
+{% endblock %}
+
+{% block breadcrumb_items %}
+    <li class="breadcrumb-item active">لوحة المعلم</li>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <div>
+        <h1 class="page-header-title">مرحباً، {{ teacher.arabic_name or ('أ. ' + teacher.full_name) }}! 👋</h1>
+        <p class="page-header-sub">لوحة تحكم المعلم - إدارة الطلاب والمواد</p>
+    </div>
+</div>
+
+<!-- Stats -->
+<div class="row g-4 mb-4">
+    <div class="col-lg-3 col-md-6">
+        <div class="stat-widget">
+            <div class="widget-icon blue"><i class="bi bi-people-fill"></i></div>
+            <div class="widget-info">
+                <div class="widget-value">{{ students_count }}</div>
+                <div class="widget-label">إجمالي الطلاب</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="stat-widget">
+            <div class="widget-icon green"><i class="bi bi-building"></i></div>
+            <div class="widget-info">
+                <div class="widget-value">{{ classes_count }}</div>
+                <div class="widget-label">الصفوف</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="stat-widget">
+            <div class="widget-icon orange"><i class="bi bi-book-fill"></i></div>
+            <div class="widget-info">
+                <div class="widget-value">{{ subjects|length }}</div>
+                <div class="widget-label">المواد الدراسية</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="stat-widget">
+            <div class="widget-icon purple"><i class="bi bi-file-earmark-text-fill"></i></div>
+            <div class="widget-info">
+                <div class="widget-value">{{ assignments|length }}</div>
+                <div class="widget-label">واجبات نشطة</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Recent Grades -->
+    <div class="col-lg-7">
+        <div class="dash-card">
+            <div class="dash-card-header">
+                <h5 class="dash-card-title">
+                    <i class="bi bi-journal-text text-primary me-2"></i>
+                    آخر الدرجات المرصودة
+                </h5>
+                <a href="{{ url_for('teacher_grades') }}" class="btn btn-sm btn-outline-primary">إضافة درجة</a>
+            </div>
+            <div class="dash-card-body p-0">
+                {% if recent_grades %}
+                <div class="table-responsive">
+                    <table class="table dash-table mb-0">
+                        <thead>
+                            <tr><th>الطالب</th><th>المادة</th><th>الدرجة</th><th>التقدير</th><th>التاريخ</th></tr>
+                        </thead>
+                        <tbody>
+                            {% for grade in recent_grades %}
+                            <tr>
+                                <td>
+                                    <div class="student-name-cell">
+                                        <div class="student-avatar">{{ grade.student.first_name[0] }}</div>
+                                        <div>
+                                            <div class="student-name">{{ grade.student.full_name }}</div>
+                                            <div class="student-id">{{ grade.student.student_id }}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>{{ grade.subject.name }}</td>
+                                <td><strong class="text-{{ grade.grade_color }}">{{ grade.score|int }}/{{ grade.total_score|int }}</strong></td>
+                                <td><span class="badge bg-{{ grade.grade_color }}-subtle text-{{ grade.grade_color }}">{{ grade.letter_grade }}</span></td>
+                                <td><small>{{ grade.created_at.strftime('%Y-%m-%d') }}</small></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state py-4">
+                    <i class="bi bi-journal-x d-block fs-2 text-secondary mb-2"></i>
+                    <p class="text-secondary mb-0">لم يتم رصد درجات بعد</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column -->
+    <div class="col-lg-5">
+        <!-- Subjects -->
+        <div class="dash-card mb-4">
+            <div class="dash-card-header">
+                <h5 class="dash-card-title">
+                    <i class="bi bi-book-fill text-primary me-2"></i>
+                    المواد الدراسية
+                </h5>
+            </div>
+            <div class="dash-card-body p-0">
+                {% for subject in subjects %}
+                <div class="d-flex align-items-center justify-content-between p-3 border-bottom">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="bg-primary-soft rounded-2 p-2">
+                            <i class="bi bi-book text-primary"></i>
+                        </div>
+                        <div>
+                            <div class="fw-semibold small">{{ subject.name }}</div>
+                            <div class="text-secondary" style="font-size:11px;">{{ subject.code }}</div>
+                        </div>
+                    </div>
+                    <span class="badge bg-light text-secondary">{{ subject.total_marks }} درجة</span>
+                </div>
+                {% else %}
+                <div class="p-3 text-center text-secondary small">لا توجد مواد مسندة</div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Schedule -->
+        <div class="dash-card">
+            <div class="dash-card-header">
+                <h5 class="dash-card-title">
+                    <i class="bi bi-clock-fill text-primary me-2"></i>
+                    جدول الحصص
+                </h5>
+            </div>
+            <div class="dash-card-body">
+                {% if schedule %}
+                    {% for item in schedule[:6] %}
+                    <div class="schedule-item">
+                        <div class="schedule-bar"></div>
+                        <div class="schedule-info">
+                            <div class="schedule-subject">{{ item.subject.name }}</div>
+                            <div class="schedule-meta">{{ item.day_name }} | {{ item.start_time }}-{{ item.end_time }}</div>
+                        </div>
+                        <span class="schedule-time">{{ item.class_.name }}</span>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                <div class="text-center text-secondary small py-3">
+                    <i class="bi bi-calendar-x d-block mb-2 fs-3"></i>لا يوجد جدول
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Assignments -->
+{% if assignments %}
+<div class="dash-card mt-4">
+    <div class="dash-card-header">
+        <h5 class="dash-card-title">
+            <i class="bi bi-file-earmark-text-fill text-primary me-2"></i>
+            الواجبات المعلقة
+        </h5>
+        <a href="{{ url_for('teacher_assignments') }}" class="btn btn-sm btn-outline-primary">إضافة واجب</a>
+    </div>
+    <div class="dash-card-body p-0">
+        <div class="table-responsive">
+            <table class="table dash-table mb-0">
+                <thead><tr><th>العنوان</th><th>المادة</th><th>الصف</th><th>تاريخ التسليم</th><th>الدرجة</th></tr></thead>
+                <tbody>
+                    {% for a in assignments %}
+                    <tr>
+                        <td class="fw-semibold">{{ a.title }}</td>
+                        <td>{{ a.subject.name }}</td>
+                        <td>{{ a.class_.name if a.class_ else 'الكل' }}</td>
+                        <td>{% if a.due_date %}<small>{{ a.due_date.strftime('%Y-%m-%d') }}</small>{% else %}-{% endif %}</td>
+                        <td>{{ a.total_marks }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

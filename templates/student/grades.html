@@ -1,0 +1,201 @@
+{% extends "dashboard_layout.html" %}
+
+{% block title %}الدرجات والنتائج{% endblock %}
+
+{% block sidebar_nav %}
+<span class="nav-section-title">القائمة الرئيسية</span>
+<a href="{{ url_for('student_dashboard') }}" class="sidebar-link">
+    <div class="link-icon"><i class="bi bi-speedometer2"></i></div><span>الرئيسية</span>
+</a>
+<a href="{{ url_for('student_profile') }}" class="sidebar-link">
+    <div class="link-icon"><i class="bi bi-person-fill"></i></div><span>الملف الشخصي</span>
+</a>
+<a href="{{ url_for('student_grades') }}" class="sidebar-link active">
+    <div class="link-icon"><i class="bi bi-journal-text"></i></div><span>الدرجات والنتائج</span>
+</a>
+<a href="{{ url_for('student_attendance') }}" class="sidebar-link">
+    <div class="link-icon"><i class="bi bi-calendar-check-fill"></i></div><span>الحضور والغياب</span>
+</a>
+<a href="{{ url_for('student_schedule') }}" class="sidebar-link">
+    <div class="link-icon"><i class="bi bi-clock-fill"></i></div><span>الجدول الدراسي</span>
+</a>
+<a href="{{ url_for('student_assignments') }}" class="sidebar-link">
+    <div class="link-icon"><i class="bi bi-file-earmark-text-fill"></i></div><span>الواجبات</span>
+</a>
+<a href="{{ url_for('student_reports') }}" class="sidebar-link">
+    <div class="link-icon"><i class="bi bi-bar-chart-fill"></i></div><span>التقارير</span>
+</a>
+{% endblock %}
+
+{% block breadcrumb_items %}
+    <li class="breadcrumb-item active">الدرجات والنتائج</li>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <div>
+        <h1 class="page-header-title">الدرجات والنتائج</h1>
+        <p class="page-header-sub">عرض جميع درجاتك ونتائجك الأكاديمية</p>
+    </div>
+    <button onclick="printReport()" class="btn btn-outline-primary">
+        <i class="bi bi-printer me-2"></i>طباعة التقرير
+    </button>
+</div>
+
+<!-- Student Info Card -->
+<div class="dash-card mb-4">
+    <div class="dash-card-body">
+        <div class="row g-3 align-items-center">
+            <div class="col-auto">
+                <div class="user-avatar" style="width:64px;height:64px;font-size:28px;">
+                    <i class="bi bi-person-fill"></i>
+                </div>
+            </div>
+            <div class="col">
+                <h4 class="fw-bold mb-1">{{ student.full_name }}</h4>
+                <div class="d-flex gap-3 flex-wrap">
+                    <span class="text-secondary small">
+                        <i class="bi bi-hash me-1"></i>{{ student.student_id }}
+                    </span>
+                    {% if student.class_ %}
+                    <span class="text-secondary small">
+                        <i class="bi bi-building me-1"></i>{{ student.class_.name }}
+                    </span>
+                    {% endif %}
+                    <span class="text-secondary small">
+                        <i class="bi bi-calendar me-1"></i>{{ active_term }}
+                    </span>
+                </div>
+            </div>
+            <div class="col-auto">
+                <div class="text-center">
+                    <div class="display-6 fw-bold text-primary">{{ student.average_grade }}</div>
+                    <div class="text-secondary small">المعدل العام</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Term Filter -->
+<div class="d-flex gap-2 mb-4 flex-wrap">
+    {% for term in ['الفصل الأول', 'الفصل الثاني', 'الفصل الثالث'] %}
+    <a href="{{ url_for('student_grades', term=term) }}"
+       class="btn btn-{% if active_term == term %}primary{% else %}outline-secondary{% endif %}">
+        {{ term }}
+    </a>
+    {% endfor %}
+</div>
+
+<!-- Grades Table -->
+<div class="dash-card">
+    <div class="dash-card-header">
+        <h5 class="dash-card-title">
+            <i class="bi bi-journal-text text-primary me-2"></i>
+            نتائج {{ active_term }}
+        </h5>
+    </div>
+    <div class="dash-card-body p-0">
+        {% if grades %}
+        <div class="table-responsive">
+            <table class="table dash-table mb-0">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>المادة</th>
+                        <th>نوع الاختبار</th>
+                        <th>الدرجة</th>
+                        <th>الدرجة الكلية</th>
+                        <th>النسبة</th>
+                        <th>التقدير</th>
+                        <th>ملاحظات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for grade in grades %}
+                    <tr>
+                        <td class="text-secondary">{{ loop.index }}</td>
+                        <td>
+                            <div class="fw-semibold">{{ grade.subject.name }}</div>
+                        </td>
+                        <td>
+                            <span class="badge bg-light text-secondary">{{ grade.exam_type }}</span>
+                        </td>
+                        <td>
+                            <span class="fw-bold fs-6 text-{{ grade.grade_color }}">
+                                {{ grade.score|int }}
+                            </span>
+                        </td>
+                        <td class="text-secondary">{{ grade.total_score|int }}</td>
+                        <td>
+                            <div class="d-flex align-items-center gap-2" style="min-width:120px;">
+                                <div class="progress flex-grow-1" style="height:6px;">
+                                    <div class="progress-bar bg-{{ grade.grade_color }}"
+                                         style="width:{{ grade.percentage }}%"></div>
+                                </div>
+                                <small class="fw-semibold" style="min-width:38px;">{{ grade.percentage }}%</small>
+                            </div>
+                        </td>
+                        <td>
+                            <span class="badge bg-{{ grade.grade_color }}-subtle text-{{ grade.grade_color }} px-3 py-2">
+                                {{ grade.letter_grade }}
+                            </span>
+                        </td>
+                        <td>
+                            <small class="text-secondary">{{ grade.remarks or '-' }}</small>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr class="table-light fw-bold">
+                        <td colspan="3">المعدل العام</td>
+                        <td colspan="4">
+                            <span class="fs-6 text-primary fw-bold">
+                                {{ student.average_grade }}
+                            </span>
+                        </td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state py-5">
+            <i class="bi bi-journal-x d-block fs-1 text-secondary mb-3"></i>
+            <h5 class="text-secondary">لا توجد درجات مسجلة لهذا الفصل</h5>
+            <p class="text-muted small">اختر فصلاً دراسياً آخر أو تواصل مع المعلم</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Bar Chart -->
+{% if grades %}
+<div class="dash-card mt-4">
+    <div class="dash-card-header">
+        <h5 class="dash-card-title">
+            <i class="bi bi-bar-chart-fill text-primary me-2"></i>
+            رسم بياني للدرجات
+        </h5>
+    </div>
+    <div class="dash-card-body">
+        <div class="chart-container" style="height:260px;">
+            <canvas id="gradesBarChart"></canvas>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+{% if grades %}
+const labels = [{% for g in grades %}'{{ g.subject.name }}',{% endfor %}];
+const scores = [{% for g in grades %}{{ g.score }},{% endfor %}];
+initBarChart('gradesBarChart', labels, scores, '#1a56db');
+{% endif %}
+</script>
+{% endblock %}

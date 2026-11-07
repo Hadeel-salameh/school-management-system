@@ -1,0 +1,86 @@
+{% extends "layout.html" %}
+
+{% block title %}الأنشطة{% endblock %}
+
+{% block content %}
+
+<!-- Page Hero -->
+<section class="page-hero">
+    <div class="container">
+        <div class="d-flex align-items-center gap-3">
+            <div class="bg-white bg-opacity-25 rounded-3 p-2">
+                <i class="bi bi-stars text-white fs-4"></i>
+            </div>
+            <div>
+                <h1 class="page-hero-title mb-1">الأنشطة</h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item"><a href="{{ url_for('index') }}">الرئيسية</a></li>
+                        <li class="breadcrumb-item active">الأنشطة</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Filter Tabs -->
+<section class="py-4 bg-white border-bottom">
+    <div class="container">
+        <div class="d-flex gap-2 flex-wrap">
+            {% for cat in ['الكل', 'رياضي', 'علمي', 'ثقافي', 'فني', 'بيئي'] %}
+            <a href="{{ url_for('activities_page', category=cat) }}"
+               class="btn btn-{% if active_category == cat %}primary{% else %}outline-secondary{% endif %} btn-sm px-4">
+                {{ cat }}
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- Activities Grid -->
+<section class="py-5">
+    <div class="container">
+        {% if activities %}
+        <div class="row g-4">
+            {% for activity in activities %}
+            <div class="col-lg-4 col-md-6">
+                <div class="news-card h-100">
+                    <div class="activity-img-card" style="height:220px; position:relative; border-radius:0;">
+                        {% if activity.image_url %}
+                            <img src="{{ activity.image_url }}" alt="{{ activity.title }}"
+                                 style="width:100%; height:100%; object-fit:cover;">
+                        {% else %}
+                            <div class="w-100 h-100 bg-light d-flex align-items-center justify-content-center">
+                                <i class="bi bi-image fs-1 text-secondary"></i>
+                            </div>
+                        {% endif %}
+                        <span class="activity-category-badge">{{ activity.category }}</span>
+                    </div>
+                    <div class="card-body p-4">
+                        <h5 class="card-title fw-bold">{{ activity.title }}</h5>
+                        {% if activity.description %}
+                            <p class="card-text text-secondary">{{ activity.description[:100] }}...</p>
+                        {% endif %}
+                        {% if activity.activity_date %}
+                            <small class="text-muted">
+                                <i class="bi bi-calendar3 me-1"></i>
+                                {{ activity.activity_date.strftime('%Y-%m-%d') }}
+                            </small>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-state py-5">
+            <i class="bi bi-stars d-block fs-1 text-secondary mb-3"></i>
+            <h5 class="text-secondary">لا توجد أنشطة في هذه الفئة</h5>
+            <a href="{{ url_for('activities_page') }}" class="btn btn-primary mt-2">عرض جميع الأنشطة</a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+{% endblock %}

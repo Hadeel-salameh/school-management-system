@@ -1,0 +1,57 @@
+{% extends "dashboard_layout.html" %}
+{% block title %}التقارير{% endblock %}
+{% block sidebar_nav %}
+<a href="{{ url_for('student_dashboard') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-speedometer2"></i></div><span>الرئيسية</span></a>
+<a href="{{ url_for('student_profile') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-person-fill"></i></div><span>الملف الشخصي</span></a>
+<a href="{{ url_for('student_grades') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-journal-text"></i></div><span>الدرجات والنتائج</span></a>
+<a href="{{ url_for('student_attendance') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-calendar-check-fill"></i></div><span>الحضور والغياب</span></a>
+<a href="{{ url_for('student_schedule') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-clock-fill"></i></div><span>الجدول الدراسي</span></a>
+<a href="{{ url_for('student_assignments') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-file-earmark-text-fill"></i></div><span>الواجبات</span></a>
+<a href="{{ url_for('student_reports') }}" class="sidebar-link active"><div class="link-icon"><i class="bi bi-bar-chart-fill"></i></div><span>التقارير</span></a>
+{% endblock %}
+{% block breadcrumb_items %}<li class="breadcrumb-item active">التقارير</li>{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1 class="page-header-title">تقارير الأداء الأكاديمي</h1>
+    <button onclick="printReport()" class="btn btn-outline-primary"><i class="bi bi-printer me-2"></i>طباعة</button>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-4">
+        <div class="stat-widget"><div class="widget-icon blue"><i class="bi bi-graph-up"></i></div>
+            <div class="widget-info"><div class="widget-value">{{ student.average_grade }}</div><div class="widget-label">المعدل العام</div></div></div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-widget"><div class="widget-icon green"><i class="bi bi-calendar-check-fill"></i></div>
+            <div class="widget-info"><div class="widget-value">{{ student.attendance_percentage }}%</div><div class="widget-label">نسبة الحضور</div></div></div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-widget"><div class="widget-icon orange"><i class="bi bi-book-fill"></i></div>
+            <div class="widget-info"><div class="widget-value">{{ grades|length }}</div><div class="widget-label">المواد المقيّمة</div></div></div>
+    </div>
+</div>
+
+{% if grades %}
+<div class="dash-card mt-4">
+    <div class="dash-card-header"><h5 class="dash-card-title">تقرير الدرجات التفصيلي</h5></div>
+    <div class="dash-card-body p-0">
+        <div class="table-responsive">
+            <table class="table dash-table mb-0">
+                <thead><tr><th>المادة</th><th>الدرجة</th><th>من</th><th>النسبة</th><th>التقدير</th></tr></thead>
+                <tbody>
+                    {% for grade in grades %}
+                    <tr>
+                        <td>{{ grade.subject.name }}</td>
+                        <td class="fw-bold text-{{ grade.grade_color }}">{{ grade.score|int }}</td>
+                        <td>{{ grade.total_score|int }}</td>
+                        <td>{{ grade.percentage }}%</td>
+                        <td><span class="badge bg-{{ grade.grade_color }}-subtle text-{{ grade.grade_color }}">{{ grade.letter_grade }}</span></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}مدرسة المستقبل الدولية{% endblock %} | نظام إدارة المدرسة</title>
+
+    <!-- Bootstrap 5 RTL -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Google Fonts Arabic -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&family=Tajawal:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="public-body">
+
+    <!-- ====== NAVBAR ====== -->
+    <nav class="navbar navbar-expand-lg navbar-dark sticky-top" id="mainNavbar">
+        <div class="container">
+            <!-- Brand -->
+            <a class="navbar-brand d-flex align-items-center gap-2" href="{{ url_for('index') }}">
+                <div class="brand-logo">
+                    <i class="bi bi-mortarboard-fill"></i>
+                </div>
+                <div class="brand-text">
+                    <span class="brand-name">{{ school_name }}</span>
+                    <span class="brand-motto">{{ school_motto }}</span>
+                </div>
+            </a>
+
+            <!-- Mobile Toggle -->
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <!-- Nav Links -->
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'index' %}active{% endif %}"
+                           href="{{ url_for('index') }}">
+                            <i class="bi bi-house-fill me-1"></i> الرئيسية
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'about' %}active{% endif %}"
+                           href="{{ url_for('about') }}">
+                            <i class="bi bi-info-circle-fill me-1"></i> من نحن
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'teachers_page' %}active{% endif %}"
+                           href="{{ url_for('teachers_page') }}">
+                            <i class="bi bi-person-badge-fill me-1"></i> الكادر التعليمي
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'news_page' %}active{% endif %}"
+                           href="{{ url_for('news_page') }}">
+                            <i class="bi bi-newspaper me-1"></i> الأخبار
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'activities_page' %}active{% endif %}"
+                           href="{{ url_for('activities_page') }}">
+                            <i class="bi bi-stars me-1"></i> الأنشطة
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'contact' %}active{% endif %}"
+                           href="{{ url_for('contact') }}">
+                            <i class="bi bi-envelope-fill me-1"></i> تواصل معنا
+                        </a>
+                    </li>
+                </ul>
+
+                <!-- Auth Buttons -->
+                <div class="d-flex align-items-center gap-2">
+                    {% if current_user.is_authenticated %}
+                        <div class="dropdown">
+                            <button class="btn btn-outline-light btn-sm dropdown-toggle d-flex align-items-center gap-2"
+                                    type="button" data-bs-toggle="dropdown">
+                                <div class="user-avatar-sm">
+                                    <i class="bi bi-person-fill"></i>
+                                </div>
+                                {{ current_user.username }}
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li>
+                                    <a class="dropdown-item" href="{{ url_for('dashboard_redirect') }}">
+                                        <i class="bi bi-speedometer2 me-2"></i> لوحة التحكم
+                                    </a>
+                                </li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <a class="dropdown-item text-danger" href="{{ url_for('logout') }}">
+                                        <i class="bi bi-box-arrow-right me-2"></i> تسجيل الخروج
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    {% else %}
+                        <a href="{{ url_for('login') }}" class="btn btn-light btn-login">
+                            <i class="bi bi-box-arrow-in-right me-1"></i> تسجيل الدخول
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ====== FLASH MESSAGES ====== -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-container">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show shadow-sm" role="alert">
+                        <i class="bi bi-{% if category == 'success' %}check-circle-fill{% elif category == 'danger' %}x-circle-fill{% elif category == 'warning' %}exclamation-triangle-fill{% else %}info-circle-fill{% endif %} me-2"></i>
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- ====== MAIN CONTENT ====== -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- ====== FOOTER ====== -->
+    <footer class="main-footer">
+        <div class="footer-top">
+            <div class="container">
+                <div class="row g-4">
+                    <div class="col-lg-4 col-md-6">
+                        <div class="footer-brand">
+                            <div class="d-flex align-items-center gap-3 mb-3">
+                                <div class="footer-logo">
+                                    <i class="bi bi-mortarboard-fill"></i>
+                                </div>
+                                <div>
+                                    <h5 class="mb-0 text-white fw-bold">{{ school_name }}</h5>
+                                    <small class="text-light opacity-75">{{ school_motto }}</small>
+                                </div>
+                            </div>
+                            <p class="text-light opacity-75 small">
+                                مدرسة المستقبل الدولية تسعى لتقديم تعليم متميز يُعد الطلاب لمواجهة تحديات المستقبل بكفاءة وثقة.
+                            </p>
+                            <div class="social-links d-flex gap-2 mt-3">
+                                <a href="#" class="social-btn"><i class="bi bi-facebook"></i></a>
+                                <a href="#" class="social-btn"><i class="bi bi-twitter-x"></i></a>
+                                <a href="#" class="social-btn"><i class="bi bi-instagram"></i></a>
+                                <a href="#" class="social-btn"><i class="bi bi-youtube"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-6">
+                        <h6 class="footer-heading">روابط سريعة</h6>
+                        <ul class="footer-links">
+                            <li><a href="{{ url_for('index') }}"><i class="bi bi-chevron-left me-1"></i>الرئيسية</a></li>
+                            <li><a href="{{ url_for('about') }}"><i class="bi bi-chevron-left me-1"></i>من نحن</a></li>
+                            <li><a href="{{ url_for('teachers_page') }}"><i class="bi bi-chevron-left me-1"></i>الكادر التعليمي</a></li>
+                            <li><a href="{{ url_for('news_page') }}"><i class="bi bi-chevron-left me-1"></i>الأخبار</a></li>
+                            <li><a href="{{ url_for('activities_page') }}"><i class="bi bi-chevron-left me-1"></i>الأنشطة</a></li>
+                            <li><a href="{{ url_for('contact') }}"><i class="bi bi-chevron-left me-1"></i>تواصل معنا</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <h6 class="footer-heading">خدماتنا</h6>
+                        <ul class="footer-links">
+                            <li><a href="#"><i class="bi bi-chevron-left me-1"></i>التعليم الإلكتروني</a></li>
+                            <li><a href="#"><i class="bi bi-chevron-left me-1"></i>إدارة الدرجات</a></li>
+                            <li><a href="#"><i class="bi bi-chevron-left me-1"></i>متابعة الحضور</a></li>
+                            <li><a href="#"><i class="bi bi-chevron-left me-1"></i>الجدول الدراسي</a></li>
+                            <li><a href="{{ url_for('login') }}"><i class="bi bi-chevron-left me-1"></i>بوابة الطالب</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-3 col-md-6">
+                        <h6 class="footer-heading">تواصل معنا</h6>
+                        <ul class="footer-contact">
+                            <li><i class="bi bi-geo-alt-fill"></i> 123 شارع المدرسة، المدينة، الدولة</li>
+                            <li><i class="bi bi-telephone-fill"></i> +962 1 2345678</li>
+                            <li><i class="bi bi-envelope-fill"></i> info@future-school.edu</li>
+                            <li><i class="bi bi-clock-fill"></i> السبت - الخميس: 7:00 ص - 3:00 م</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-md-6 text-center text-md-start">
+                        <p class="mb-0 small">
+                            &copy; {{ current_year }} {{ school_name }}. جميع الحقوق محفوظة.
+                        </p>
+                    </div>
+                    <div class="col-md-6 text-center text-md-end mt-2 mt-md-0">
+                        <small class="text-light opacity-50">
+                            نظام إدارة المدرسة - تطوير متخصص
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom JS -->
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

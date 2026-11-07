@@ -1,0 +1,96 @@
+{% extends "dashboard_layout.html" %}
+
+{% block title %}الملف الشخصي{% endblock %}
+
+{% block sidebar_nav %}
+<a href="{{ url_for('student_dashboard') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-speedometer2"></i></div><span>الرئيسية</span></a>
+<a href="{{ url_for('student_profile') }}" class="sidebar-link active"><div class="link-icon"><i class="bi bi-person-fill"></i></div><span>الملف الشخصي</span></a>
+<a href="{{ url_for('student_grades') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-journal-text"></i></div><span>الدرجات والنتائج</span></a>
+<a href="{{ url_for('student_attendance') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-calendar-check-fill"></i></div><span>الحضور والغياب</span></a>
+<a href="{{ url_for('student_schedule') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-clock-fill"></i></div><span>الجدول الدراسي</span></a>
+<a href="{{ url_for('student_assignments') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-file-earmark-text-fill"></i></div><span>الواجبات</span></a>
+<a href="{{ url_for('student_reports') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-bar-chart-fill"></i></div><span>التقارير</span></a>
+{% endblock %}
+
+{% block breadcrumb_items %}
+<li class="breadcrumb-item active">الملف الشخصي</li>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1 class="page-header-title">الملف الشخصي</h1>
+</div>
+
+<div class="row g-4">
+    <div class="col-md-4">
+        <div class="dash-card text-center p-4">
+            <div class="user-avatar mx-auto mb-3" style="width:80px;height:80px;font-size:36px;border-radius:20px;">
+                <i class="bi bi-person-fill"></i>
+            </div>
+            <h4 class="fw-bold">{{ student.full_name }}</h4>
+            <span class="badge bg-primary-soft text-primary px-3 py-2 mb-2">{{ student.student_id }}</span>
+            <div class="text-secondary small">
+                {% if student.class_ %}{{ student.class_.name }}{% endif %}
+            </div>
+            <hr>
+            <div class="row g-3 text-center">
+                <div class="col-6">
+                    <div class="fw-bold fs-5 text-primary">{{ student.average_grade }}</div>
+                    <div class="text-secondary small">المعدل</div>
+                </div>
+                <div class="col-6">
+                    <div class="fw-bold fs-5 text-success">{{ student.attendance_percentage }}%</div>
+                    <div class="text-secondary small">الحضور</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="dash-card">
+            <div class="dash-card-header">
+                <h5 class="dash-card-title">البيانات الشخصية</h5>
+            </div>
+            <div class="dash-card-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label text-secondary small">الاسم الكامل</label>
+                        <p class="fw-semibold">{{ student.full_name }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-secondary small">الاسم بالعربية</label>
+                        <p class="fw-semibold">{{ student.arabic_name or '-' }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-secondary small">الرقم الطلابي</label>
+                        <p class="fw-semibold">{{ student.student_id }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-secondary small">الصف الدراسي</label>
+                        <p class="fw-semibold">{{ student.class_.name if student.class_ else '-' }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-secondary small">تاريخ الميلاد</label>
+                        <p class="fw-semibold">{{ student.date_of_birth.strftime('%Y-%m-%d') if student.date_of_birth else '-' }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-secondary small">الجنس</label>
+                        <p class="fw-semibold">{{ 'ذكر' if student.gender == 'male' else 'أنثى' if student.gender == 'female' else '-' }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-secondary small">رقم الهاتف</label>
+                        <p class="fw-semibold">{{ student.phone or '-' }}</p>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label text-secondary small">اسم المستخدم</label>
+                        <p class="fw-semibold">{{ student.user.username }}</p>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label text-secondary small">ولي الأمر</label>
+                        <p class="fw-semibold">{{ student.parent_name or '-' }} - {{ student.parent_phone or '' }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

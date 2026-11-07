@@ -1,0 +1,91 @@
+{% extends "dashboard_layout.html" %}
+{% block title %}رصد الدرجات{% endblock %}
+{% block sidebar_nav %}
+<a href="{{ url_for('teacher_dashboard') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-speedometer2"></i></div><span>الرئيسية</span></a>
+<a href="{{ url_for('teacher_students') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-people-fill"></i></div><span>الطلاب</span></a>
+<a href="{{ url_for('teacher_grades') }}" class="sidebar-link active"><div class="link-icon"><i class="bi bi-journal-text"></i></div><span>الدرجات</span></a>
+<a href="{{ url_for('teacher_attendance') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-calendar-check-fill"></i></div><span>الحضور</span></a>
+<a href="{{ url_for('teacher_assignments') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-file-earmark-text-fill"></i></div><span>الواجبات</span></a>
+<a href="{{ url_for('teacher_exams') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-clipboard-fill"></i></div><span>الاختبارات</span></a>
+{% endblock %}
+{% block breadcrumb_items %}<li class="breadcrumb-item active">رصد الدرجات</li>{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1 class="page-header-title">رصد الدرجات</h1>
+</div>
+<div class="row g-4">
+    <div class="col-lg-5">
+        <div class="dash-card">
+            <div class="dash-card-header"><h5 class="dash-card-title">إضافة درجة جديدة</h5></div>
+            <div class="dash-card-body">
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    <div class="mb-3">
+                        <label class="form-label">{{ form.student_id.label.text }} *</label>
+                        {{ form.student_id(class="form-select") }}
+                        {% for e in form.student_id.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">{{ form.subject_id.label.text }} *</label>
+                        {{ form.subject_id(class="form-select") }}
+                        {% for e in form.subject_id.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+                    </div>
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <label class="form-label">{{ form.score.label.text }} *</label>
+                            {{ form.score(class="form-control", placeholder="0-100") }}
+                            {% for e in form.score.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label">{{ form.total_score.label.text }}</label>
+                            {{ form.total_score(class="form-control", placeholder="100") }}
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">{{ form.exam_type.label.text }}</label>
+                        {{ form.exam_type(class="form-select") }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">{{ form.term.label.text }}</label>
+                        {{ form.term(class="form-select") }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">{{ form.remarks.label.text }}</label>
+                        {{ form.remarks(class="form-control", rows="2") }}
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-save me-2"></i>حفظ الدرجة
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-7">
+        <div class="dash-card">
+            <div class="dash-card-header"><h5 class="dash-card-title">الدرجات المرصودة ({{ grades|length }})</h5></div>
+            <div class="dash-card-body p-0">
+                {% if grades %}
+                <div class="table-responsive">
+                    <table class="table dash-table mb-0">
+                        <thead><tr><th>الطالب</th><th>المادة</th><th>الدرجة</th><th>التقدير</th><th>النوع</th></tr></thead>
+                        <tbody>
+                            {% for g in grades %}
+                            <tr>
+                                <td><div class="fw-semibold small">{{ g.student.full_name }}</div></td>
+                                <td>{{ g.subject.name }}</td>
+                                <td><strong class="text-{{ g.grade_color }}">{{ g.score|int }}/{{ g.total_score|int }}</strong></td>
+                                <td><span class="badge bg-{{ g.grade_color }}-subtle text-{{ g.grade_color }}">{{ g.letter_grade }}</span></td>
+                                <td><small class="text-secondary">{{ g.exam_type }}</small></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state py-4"><i class="bi bi-journal-x d-block fs-2 text-secondary mb-2"></i><p class="text-secondary">لم يتم رصد درجات بعد</p></div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

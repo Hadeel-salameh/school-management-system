@@ -1,0 +1,60 @@
+{% extends "dashboard_layout.html" %}
+{% block title %}إدارة الحضور{% endblock %}
+{% block sidebar_nav %}
+<a href="{{ url_for('admin_dashboard') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-speedometer2"></i></div><span>الرئيسية</span></a>
+<a href="{{ url_for('admin_students') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-people-fill"></i></div><span>الطلاب</span></a>
+<a href="{{ url_for('admin_teachers') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-person-badge-fill"></i></div><span>المعلمون</span></a>
+<a href="{{ url_for('admin_classes') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-building"></i></div><span>الصفوف</span></a>
+<a href="{{ url_for('admin_subjects') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-book-fill"></i></div><span>المواد</span></a>
+<a href="{{ url_for('admin_grades') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-journal-text"></i></div><span>الدرجات</span></a>
+<a href="{{ url_for('admin_attendance') }}" class="sidebar-link active"><div class="link-icon"><i class="bi bi-calendar-check-fill"></i></div><span>الحضور</span></a>
+<a href="{{ url_for('admin_exams') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-clipboard-fill"></i></div><span>الاختبارات</span></a>
+<a href="{{ url_for('admin_announcements') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-megaphone-fill"></i></div><span>الإعلانات</span></a>
+<a href="{{ url_for('admin_reports') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-bar-chart-fill"></i></div><span>التقارير</span></a>
+{% endblock %}
+{% block breadcrumb_items %}<li class="breadcrumb-item active">الحضور والغياب</li>{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div><h1 class="page-header-title">إدارة الحضور والغياب</h1></div>
+    <a href="{{ url_for('admin_attendance_add') }}" class="btn btn-primary"><i class="bi bi-plus-lg me-2"></i>تسجيل حضور</a>
+</div>
+<div class="dash-card">
+    <div class="dash-card-body p-0">
+        {% if attendances.items %}
+        <div class="table-responsive">
+            <table class="table dash-table mb-0">
+                <thead><tr><th>الطالب</th><th>التاريخ</th><th>المادة</th><th>الحالة</th><th>ملاحظات</th><th>الإجراءات</th></tr></thead>
+                <tbody>
+                    {% for att in attendances.items %}
+                    {% set status_map = {'present': ('success','حاضر'), 'absent': ('danger','غائب'), 'late': ('warning','متأخر'), 'excused': ('secondary','بعذر')} %}
+                    {% set color, label = status_map.get(att.status, ('secondary', att.status)) %}
+                    <tr>
+                        <td class="fw-semibold small">{{ att.student.full_name }}</td>
+                        <td>{{ att.date.strftime('%Y-%m-%d') }}</td>
+                        <td>{{ att.subject.name if att.subject else 'عام' }}</td>
+                        <td><span class="badge bg-{{ color }}-subtle text-{{ color }}">{{ label }}</span></td>
+                        <td><small class="text-secondary">{{ att.notes or '-' }}</small></td>
+                        <td>
+                            <form method="POST" action="{{ url_for('admin_attendance_delete', id=att.id) }}" style="display:inline;">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="btn btn-sm btn-outline-danger btn-delete" data-confirm="حذف هذا السجل؟"><i class="bi bi-trash"></i></button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% if attendances.pages > 1 %}
+        <div class="p-3"><nav><ul class="pagination mb-0 justify-content-center">
+            {% if attendances.has_prev %}<li class="page-item"><a class="page-link" href="{{ url_for('admin_attendance', page=attendances.prev_num) }}"><i class="bi bi-chevron-right"></i></a></li>{% endif %}
+            {% for p in attendances.iter_pages() %}{% if p %}<li class="page-item {% if p == attendances.page %}active{% endif %}"><a class="page-link" href="{{ url_for('admin_attendance', page=p) }}">{{ p }}</a></li>{% else %}<li class="page-item disabled"><span class="page-link">...</span></li>{% endif %}{% endfor %}
+            {% if attendances.has_next %}<li class="page-item"><a class="page-link" href="{{ url_for('admin_attendance', page=attendances.next_num) }}"><i class="bi bi-chevron-left"></i></a></li>{% endif %}
+        </ul></nav></div>
+        {% endif %}
+        {% else %}
+        <div class="empty-state py-5"><i class="bi bi-calendar-x d-block fs-1 text-secondary mb-3"></i><h5>لا توجد سجلات</h5></div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

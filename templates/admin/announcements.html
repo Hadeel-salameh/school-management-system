@@ -1,0 +1,54 @@
+{% extends "dashboard_layout.html" %}
+{% block title %}الإعلانات{% endblock %}
+{% block sidebar_nav %}
+<a href="{{ url_for('admin_dashboard') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-speedometer2"></i></div><span>الرئيسية</span></a>
+<a href="{{ url_for('admin_students') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-people-fill"></i></div><span>الطلاب</span></a>
+<a href="{{ url_for('admin_teachers') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-person-badge-fill"></i></div><span>المعلمون</span></a>
+<a href="{{ url_for('admin_grades') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-journal-text"></i></div><span>الدرجات</span></a>
+<a href="{{ url_for('admin_attendance') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-calendar-check-fill"></i></div><span>الحضور</span></a>
+<a href="{{ url_for('admin_exams') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-clipboard-fill"></i></div><span>الاختبارات</span></a>
+<a href="{{ url_for('admin_announcements') }}" class="sidebar-link active"><div class="link-icon"><i class="bi bi-megaphone-fill"></i></div><span>الإعلانات</span></a>
+<a href="{{ url_for('admin_reports') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-bar-chart-fill"></i></div><span>التقارير</span></a>
+{% endblock %}
+{% block breadcrumb_items %}<li class="breadcrumb-item active">الإعلانات</li>{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div><h1 class="page-header-title">إدارة الإعلانات</h1></div>
+    <a href="{{ url_for('admin_announcement_add') }}" class="btn btn-primary"><i class="bi bi-plus-lg me-2"></i>إضافة إعلان</a>
+</div>
+<div class="row g-4">
+    {% for ann in announcements %}
+    <div class="col-12">
+        <div class="dash-card">
+            <div class="dash-card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div class="d-flex gap-3 align-items-start flex-grow-1">
+                        <div class="bg-{% if ann.is_pinned %}warning{% else %}primary{% endif %}-soft rounded-3 p-3 flex-shrink-0">
+                            <i class="bi bi-{% if ann.is_pinned %}pin-fill{% else %}megaphone-fill{% endif %} text-{% if ann.is_pinned %}warning{% else %}primary{% endif %} fs-4"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <div class="d-flex gap-2 align-items-center mb-1 flex-wrap">
+                                <h5 class="fw-bold mb-0">{{ ann.title }}</h5>
+                                {% if ann.is_pinned %}<span class="badge bg-warning-subtle text-warning">مثبت</span>{% endif %}
+                                <span class="badge bg-light text-secondary">{{ {'all':'الجميع','student':'الطلاب','teacher':'المعلمون'}.get(ann.target_role, ann.target_role) }}</span>
+                            </div>
+                            <p class="text-secondary mb-2">{{ ann.content[:200] }}{% if ann.content|length > 200 %}...{% endif %}</p>
+                            <small class="text-muted"><i class="bi bi-calendar me-1"></i>{{ ann.created_at.strftime('%Y-%m-%d') }}</small>
+                        </div>
+                    </div>
+                    <div class="action-btns d-flex gap-1 me-3">
+                        <a href="{{ url_for('admin_announcement_edit', id=ann.id) }}" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
+                        <form method="POST" action="{{ url_for('admin_announcement_delete', id=ann.id) }}" style="display:inline;">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="btn btn-sm btn-outline-danger btn-delete" data-confirm="حذف هذا الإعلان؟"><i class="bi bi-trash"></i></button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-12"><div class="dash-card"><div class="empty-state py-5"><i class="bi bi-megaphone d-block fs-1 text-secondary mb-3"></i><h5>لا توجد إعلانات</h5><a href="{{ url_for('admin_announcement_add') }}" class="btn btn-primary mt-2">إضافة إعلان</a></div></div></div>
+    {% endfor %}
+</div>
+{% endblock %}

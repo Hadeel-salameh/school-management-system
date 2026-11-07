@@ -1,0 +1,302 @@
+{% extends "dashboard_layout.html" %}
+
+{% block title %}لوحة الطالب{% endblock %}
+
+{% block sidebar_user_info %}
+    <span class="user-name">{{ student.full_name }}</span>
+    <span class="user-role">
+        {% if student.class_ %}{{ student.class_.name }}{% else %}طالب{% endif %}
+    </span>
+{% endblock %}
+
+{% block sidebar_nav %}
+<span class="nav-section-title">القائمة الرئيسية</span>
+
+<a href="{{ url_for('student_dashboard') }}" class="sidebar-link active">
+    <div class="link-icon"><i class="bi bi-speedometer2"></i></div>
+    <span>الرئيسية</span>
+</a>
+<a href="{{ url_for('student_profile') }}" class="sidebar-link">
+    <div class="link-icon"><i class="bi bi-person-fill"></i></div>
+    <span>الملف الشخصي</span>
+</a>
+<a href="{{ url_for('student_grades') }}" class="sidebar-link">
+    <div class="link-icon"><i class="bi bi-journal-text"></i></div>
+    <span>الدرجات والنتائج</span>
+</a>
+<a href="{{ url_for('student_attendance') }}" class="sidebar-link">
+    <div class="link-icon"><i class="bi bi-calendar-check-fill"></i></div>
+    <span>الحضور والغياب</span>
+</a>
+<a href="{{ url_for('student_schedule') }}" class="sidebar-link">
+    <div class="link-icon"><i class="bi bi-clock-fill"></i></div>
+    <span>الجدول الدراسي</span>
+</a>
+<a href="{{ url_for('student_assignments') }}" class="sidebar-link">
+    <div class="link-icon"><i class="bi bi-file-earmark-text-fill"></i></div>
+    <span>الواجبات</span>
+</a>
+<a href="{{ url_for('student_reports') }}" class="sidebar-link">
+    <div class="link-icon"><i class="bi bi-bar-chart-fill"></i></div>
+    <span>التقارير</span>
+</a>
+
+<span class="nav-section-title">الإعدادات</span>
+<a href="{{ url_for('index') }}" class="sidebar-link">
+    <div class="link-icon"><i class="bi bi-house-fill"></i></div>
+    <span>الموقع الرئيسي</span>
+</a>
+{% endblock %}
+
+{% block breadcrumb_items %}
+    <li class="breadcrumb-item active">لوحة الطالب</li>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <div>
+        <h1 class="page-header-title">مرحباً، {{ student.first_name }}! 👋</h1>
+        <p class="page-header-sub">هذه لوحة التحكم الخاصة بك - تتبع تقدمك الأكاديمي</p>
+    </div>
+    <span class="badge bg-primary-soft text-primary px-3 py-2 fs-6">
+        {{ student.student_id }}
+    </span>
+</div>
+
+<!-- Stat Widgets -->
+<div class="row g-4 mb-4">
+    <div class="col-lg-3 col-md-6">
+        <div class="stat-widget">
+            <div class="widget-icon green">
+                <i class="bi bi-graph-up-arrow"></i>
+            </div>
+            <div class="widget-info">
+                <div class="widget-value">{{ student.average_grade }}</div>
+                <div class="widget-label">المعدل العام</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="stat-widget">
+            <div class="widget-icon blue">
+                <i class="bi bi-calendar-check-fill"></i>
+            </div>
+            <div class="widget-info">
+                {% if attendance_total > 0 %}
+                    <div class="widget-value">{{ ((attendance_present / attendance_total) * 100)|round(1) }}%</div>
+                {% else %}
+                    <div class="widget-value">-</div>
+                {% endif %}
+                <div class="widget-label">نسبة الحضور</div>
+                <div class="widget-trend trend-up">
+                    <i class="bi bi-arrow-up"></i>
+                    {{ attendance_present }} من {{ attendance_total }}
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="stat-widget">
+            <div class="widget-icon orange">
+                <i class="bi bi-book-fill"></i>
+            </div>
+            <div class="widget-info">
+                <div class="widget-value">{{ grades|length }}</div>
+                <div class="widget-label">المواد المقيّمة</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="stat-widget">
+            <div class="widget-icon purple">
+                <i class="bi bi-file-earmark-check-fill"></i>
+            </div>
+            <div class="widget-info">
+                <div class="widget-value">{{ assignments|length }}</div>
+                <div class="widget-label">واجبات معلقة</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="row g-4">
+    <!-- Grades Table -->
+    <div class="col-lg-7">
+        <div class="dash-card">
+            <div class="dash-card-header">
+                <h5 class="dash-card-title">
+                    <i class="bi bi-journal-text text-primary me-2"></i>
+                    توزيع الدرجات
+                </h5>
+                <a href="{{ url_for('student_grades') }}" class="btn btn-sm btn-outline-primary">عرض الكل</a>
+            </div>
+            <div class="dash-card-body p-0">
+                {% if grades %}
+                <div class="table-responsive">
+                    <table class="table dash-table mb-0">
+                        <thead>
+                            <tr>
+                                <th>المادة</th>
+                                <th>الدرجة</th>
+                                <th>النسبة</th>
+                                <th>التقدير</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for grade in grades %}
+                            <tr>
+                                <td>
+                                    <span class="fw-semibold">{{ grade.subject.name }}</span>
+                                </td>
+                                <td>
+                                    <span class="fw-bold text-primary">
+                                        {{ grade.score|int }}/{{ grade.total_score|int }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="progress flex-grow-1" style="height:6px;">
+                                            <div class="progress-bar bg-{{ grade.grade_color }}"
+                                                 style="width:{{ grade.percentage }}%"></div>
+                                        </div>
+                                        <small>{{ grade.percentage }}%</small>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge bg-{{ grade.grade_color }}-subtle text-{{ grade.grade_color }} grade-badge">
+                                        {{ grade.letter_grade }}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state py-4">
+                    <i class="bi bi-journal-x d-block fs-2 text-secondary mb-2"></i>
+                    <p class="text-secondary mb-0">لا توجد درجات مسجلة بعد</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column -->
+    <div class="col-lg-5">
+        <!-- Grade Chart -->
+        {% if grades %}
+        <div class="dash-card mb-4">
+            <div class="dash-card-header">
+                <h5 class="dash-card-title">
+                    <i class="bi bi-pie-chart-fill text-primary me-2"></i>
+                    توزيع التقديرات
+                </h5>
+            </div>
+            <div class="dash-card-body">
+                <div class="chart-container" style="height:220px;">
+                    <canvas id="gradeChart"></canvas>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Announcements -->
+        <div class="dash-card">
+            <div class="dash-card-header">
+                <h5 class="dash-card-title">
+                    <i class="bi bi-megaphone-fill text-primary me-2"></i>
+                    آخر الإعلانات
+                </h5>
+            </div>
+            <div class="dash-card-body p-0">
+                {% if announcements %}
+                    {% for ann in announcements %}
+                    <div class="p-3 border-bottom">
+                        <div class="d-flex gap-2 align-items-start">
+                            <div class="bg-primary-soft rounded-2 p-2 flex-shrink-0">
+                                <i class="bi bi-megaphone-fill text-primary small"></i>
+                            </div>
+                            <div>
+                                <p class="fw-semibold mb-0 small">{{ ann.title }}</p>
+                                <p class="text-secondary mb-0" style="font-size:12px;">{{ ann.short_content }}</p>
+                                <small class="text-muted">{{ ann.created_at.strftime('%Y-%m-%d') }}</small>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state py-4">
+                        <i class="bi bi-megaphone d-block fs-2 text-secondary mb-2"></i>
+                        <p class="text-secondary mb-0 small">لا توجد إعلانات</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Schedule -->
+{% if schedule %}
+<div class="row g-4 mt-0">
+    <div class="col-12">
+        <div class="dash-card">
+            <div class="dash-card-header">
+                <h5 class="dash-card-title">
+                    <i class="bi bi-clock-fill text-primary me-2"></i>
+                    جدول اليوم
+                </h5>
+                <a href="{{ url_for('student_schedule') }}" class="btn btn-sm btn-outline-primary">الجدول الكامل</a>
+            </div>
+            <div class="dash-card-body">
+                <div class="row g-3">
+                    {% for item in schedule[:6] %}
+                    <div class="col-md-4">
+                        <div class="schedule-item">
+                            <div class="schedule-bar" style="background:{{ ['#1a56db','#10b981','#f59e0b','#ef4444','#7c3aed','#06b6d4'][loop.index0 % 6] }};"></div>
+                            <div class="schedule-info">
+                                <div class="schedule-subject">{{ item.subject.name }}</div>
+                                <div class="schedule-meta">
+                                    {{ item.day_name }} | {{ item.start_time }} - {{ item.end_time }}
+                                    {% if item.room %} | {{ item.room }}{% endif %}
+                                </div>
+                            </div>
+                            <span class="schedule-time">{{ item.start_time }}</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+{% if grades %}
+const gradeLabels = [{% for g in grades %}'{{ g.subject.name }}',{% endfor %}];
+const gradeData = [{% for g in grades %}{{ g.score }},{% endfor %}];
+
+// Doughnut chart - grade distribution
+const gradeCategories = { 'ممتاز': 0, 'جيد جداً': 0, 'جيد': 0, 'مقبول': 0, 'راسب': 0 };
+{% for g in grades %}
+    const pct{{ loop.index }} = {{ g.percentage }};
+    if (pct{{ loop.index }} >= 90) gradeCategories['ممتاز']++;
+    else if (pct{{ loop.index }} >= 80) gradeCategories['جيد جداً']++;
+    else if (pct{{ loop.index }} >= 70) gradeCategories['جيد']++;
+    else if (pct{{ loop.index }} >= 60) gradeCategories['مقبول']++;
+    else gradeCategories['راسب']++;
+{% endfor %}
+
+initGradeChart('gradeChart',
+    Object.keys(gradeCategories),
+    Object.values(gradeCategories)
+);
+{% endif %}
+</script>
+{% endblock %}

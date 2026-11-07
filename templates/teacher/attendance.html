@@ -1,0 +1,77 @@
+{% extends "dashboard_layout.html" %}
+{% block title %}تسجيل الحضور{% endblock %}
+{% block sidebar_nav %}
+<a href="{{ url_for('teacher_dashboard') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-speedometer2"></i></div><span>الرئيسية</span></a>
+<a href="{{ url_for('teacher_students') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-people-fill"></i></div><span>الطلاب</span></a>
+<a href="{{ url_for('teacher_grades') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-journal-text"></i></div><span>الدرجات</span></a>
+<a href="{{ url_for('teacher_attendance') }}" class="sidebar-link active"><div class="link-icon"><i class="bi bi-calendar-check-fill"></i></div><span>الحضور</span></a>
+<a href="{{ url_for('teacher_assignments') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-file-earmark-text-fill"></i></div><span>الواجبات</span></a>
+<a href="{{ url_for('teacher_exams') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-clipboard-fill"></i></div><span>الاختبارات</span></a>
+{% endblock %}
+{% block breadcrumb_items %}<li class="breadcrumb-item active">الحضور والغياب</li>{% endblock %}
+{% block content %}
+<div class="page-header"><h1 class="page-header-title">تسجيل الحضور والغياب</h1></div>
+<div class="row g-4">
+    <div class="col-lg-4">
+        <div class="dash-card">
+            <div class="dash-card-header"><h5 class="dash-card-title">تسجيل حضور جديد</h5></div>
+            <div class="dash-card-body">
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    <div class="mb-3">
+                        <label class="form-label">{{ form.student_id.label.text }} *</label>
+                        {{ form.student_id(class="form-select") }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">{{ form.subject_id.label.text }}</label>
+                        {{ form.subject_id(class="form-select") }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">{{ form.date.label.text }} *</label>
+                        {{ form.date(class="form-control", type="date") }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">{{ form.status.label.text }} *</label>
+                        {{ form.status(class="form-select") }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">{{ form.notes.label.text }}</label>
+                        {{ form.notes(class="form-control", rows="2") }}
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100"><i class="bi bi-check me-2"></i>تسجيل الحضور</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-8">
+        <div class="dash-card">
+            <div class="dash-card-header"><h5 class="dash-card-title">سجل الحضور الأخير</h5></div>
+            <div class="dash-card-body p-0">
+                {% if attendances %}
+                <div class="table-responsive">
+                    <table class="table dash-table mb-0">
+                        <thead><tr><th>الطالب</th><th>التاريخ</th><th>الحالة</th><th>ملاحظات</th></tr></thead>
+                        <tbody>
+                            {% for att in attendances %}
+                            <tr>
+                                <td class="fw-semibold small">{{ att.student.full_name }}</td>
+                                <td>{{ att.date.strftime('%Y-%m-%d') }}</td>
+                                <td>
+                                    {% set status_map = {'present': ('success', 'حاضر'), 'absent': ('danger', 'غائب'), 'late': ('warning', 'متأخر'), 'excused': ('secondary', 'بعذر')} %}
+                                    {% set color, label = status_map.get(att.status, ('secondary', att.status)) %}
+                                    <span class="badge bg-{{ color }}-subtle text-{{ color }}">{{ label }}</span>
+                                </td>
+                                <td><small class="text-secondary">{{ att.notes or '-' }}</small></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state py-4"><p class="text-secondary">لا توجد سجلات</p></div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,69 @@
+{% extends "dashboard_layout.html" %}
+{% block title %}إدارة المعلمين{% endblock %}
+{% block sidebar_nav %}
+<a href="{{ url_for('admin_dashboard') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-speedometer2"></i></div><span>الرئيسية</span></a>
+<a href="{{ url_for('admin_students') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-people-fill"></i></div><span>إدارة الطلاب</span></a>
+<a href="{{ url_for('admin_teachers') }}" class="sidebar-link active"><div class="link-icon"><i class="bi bi-person-badge-fill"></i></div><span>إدارة المعلمين</span></a>
+<a href="{{ url_for('admin_users') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-person-gear"></i></div><span>المستخدمين</span></a>
+<a href="{{ url_for('admin_classes') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-building"></i></div><span>الصفوف</span></a>
+<a href="{{ url_for('admin_subjects') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-book-fill"></i></div><span>المواد</span></a>
+<a href="{{ url_for('admin_grades') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-journal-text"></i></div><span>الدرجات</span></a>
+<a href="{{ url_for('admin_attendance') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-calendar-check-fill"></i></div><span>الحضور</span></a>
+<a href="{{ url_for('admin_announcements') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-megaphone-fill"></i></div><span>الإعلانات</span></a>
+<a href="{{ url_for('admin_reports') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-bar-chart-fill"></i></div><span>التقارير</span></a>
+{% endblock %}
+{% block breadcrumb_items %}<li class="breadcrumb-item active">إدارة المعلمين</li>{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-header-title">إدارة المعلمين</h1>
+        <p class="page-header-sub">{{ teachers|length }} معلم مسجل</p>
+    </div>
+    <a href="{{ url_for('admin_teacher_add') }}" class="btn btn-primary">
+        <i class="bi bi-plus-lg me-2"></i>إضافة معلم جديد
+    </a>
+</div>
+<div class="dash-card">
+    <div class="dash-card-body p-0">
+        {% if teachers %}
+        <div class="table-responsive">
+            <table class="table dash-table mb-0">
+                <thead><tr><th>المعلم</th><th>رقم المعلم</th><th>التخصص</th><th>المؤهل</th><th>المواد</th><th>الإجراءات</th></tr></thead>
+                <tbody>
+                    {% for t in teachers %}
+                    <tr>
+                        <td>
+                            <div class="student-name-cell">
+                                <div class="student-avatar" style="background:linear-gradient(135deg,#10b981,#059669);">
+                                    {{ t.first_name[0] }}
+                                </div>
+                                <div>
+                                    <div class="student-name">{{ t.arabic_name or t.full_name }}</div>
+                                    <div class="student-id">{{ t.user.username }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td><code>{{ t.teacher_id }}</code></td>
+                        <td>{{ t.specialization or '-' }}</td>
+                        <td><small>{{ t.qualification or '-' }}</small></td>
+                        <td><span class="badge bg-primary-soft text-primary">{{ t.subjects.count() }}</span></td>
+                        <td>
+                            <div class="action-btns d-flex gap-1">
+                                <a href="{{ url_for('admin_teacher_edit', id=t.id) }}" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
+                                <form method="POST" action="{{ url_for('admin_teacher_delete', id=t.id) }}" style="display:inline;">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger btn-delete" data-confirm="هل تريد حذف المعلم {{ t.full_name }}؟"><i class="bi bi-trash"></i></button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state py-5"><i class="bi bi-person-badge d-block fs-1 text-secondary mb-3"></i><h5 class="text-secondary">لا يوجد معلمون</h5><a href="{{ url_for('admin_teacher_add') }}" class="btn btn-primary mt-2">إضافة معلم</a></div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

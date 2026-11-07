@@ -1,0 +1,50 @@
+{% extends "dashboard_layout.html" %}
+{% block title %}طلابي{% endblock %}
+{% block sidebar_nav %}
+<a href="{{ url_for('teacher_dashboard') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-speedometer2"></i></div><span>الرئيسية</span></a>
+<a href="{{ url_for('teacher_students') }}" class="sidebar-link active"><div class="link-icon"><i class="bi bi-people-fill"></i></div><span>الطلاب</span></a>
+<a href="{{ url_for('teacher_grades') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-journal-text"></i></div><span>الدرجات</span></a>
+<a href="{{ url_for('teacher_attendance') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-calendar-check-fill"></i></div><span>الحضور</span></a>
+<a href="{{ url_for('teacher_assignments') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-file-earmark-text-fill"></i></div><span>الواجبات</span></a>
+<a href="{{ url_for('teacher_exams') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-clipboard-fill"></i></div><span>الاختبارات</span></a>
+{% endblock %}
+{% block breadcrumb_items %}<li class="breadcrumb-item active">الطلاب</li>{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1 class="page-header-title">طلابي ({{ students|length }})</h1>
+</div>
+<div class="dash-card">
+    <div class="dash-card-body p-0">
+        {% if students %}
+        <div class="table-responsive">
+            <table class="table dash-table mb-0">
+                <thead><tr><th>الطالب</th><th>الرقم الطلابي</th><th>الصف</th><th>المعدل</th><th>الحضور</th></tr></thead>
+                <tbody>
+                    {% for student in students %}
+                    <tr>
+                        <td>
+                            <div class="student-name-cell">
+                                <div class="student-avatar">{{ student.first_name[0] }}</div>
+                                <div><div class="student-name">{{ student.full_name }}</div></div>
+                            </div>
+                        </td>
+                        <td>{{ student.student_id }}</td>
+                        <td>{{ student.class_.name if student.class_ else '-' }}</td>
+                        <td><strong class="text-primary">{{ student.average_grade }}</strong></td>
+                        <td>
+                            <span class="badge bg-{% if student.attendance_percentage >= 80 %}success{% elif student.attendance_percentage >= 60 %}warning{% else %}danger{% endif %}-subtle
+                                          text-{% if student.attendance_percentage >= 80 %}success{% elif student.attendance_percentage >= 60 %}warning{% else %}danger{% endif %}">
+                                {{ student.attendance_percentage }}%
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state py-5"><i class="bi bi-people d-block fs-1 text-secondary mb-3"></i><p>لا يوجد طلاب مرتبطون بك</p></div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

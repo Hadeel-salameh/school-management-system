@@ -1,0 +1,64 @@
+{% extends "dashboard_layout.html" %}
+{% block title %}إدارة الدرجات{% endblock %}
+{% block sidebar_nav %}
+<a href="{{ url_for('admin_dashboard') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-speedometer2"></i></div><span>الرئيسية</span></a>
+<a href="{{ url_for('admin_students') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-people-fill"></i></div><span>الطلاب</span></a>
+<a href="{{ url_for('admin_teachers') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-person-badge-fill"></i></div><span>المعلمون</span></a>
+<a href="{{ url_for('admin_classes') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-building"></i></div><span>الصفوف</span></a>
+<a href="{{ url_for('admin_subjects') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-book-fill"></i></div><span>المواد</span></a>
+<a href="{{ url_for('admin_grades') }}" class="sidebar-link active"><div class="link-icon"><i class="bi bi-journal-text"></i></div><span>الدرجات</span></a>
+<a href="{{ url_for('admin_attendance') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-calendar-check-fill"></i></div><span>الحضور</span></a>
+<a href="{{ url_for('admin_exams') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-clipboard-fill"></i></div><span>الاختبارات</span></a>
+<a href="{{ url_for('admin_announcements') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-megaphone-fill"></i></div><span>الإعلانات</span></a>
+<a href="{{ url_for('admin_reports') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-bar-chart-fill"></i></div><span>التقارير</span></a>
+{% endblock %}
+{% block breadcrumb_items %}<li class="breadcrumb-item active">الدرجات</li>{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div><h1 class="page-header-title">إدارة الدرجات</h1></div>
+    <a href="{{ url_for('admin_grade_add') }}" class="btn btn-primary"><i class="bi bi-plus-lg me-2"></i>إضافة درجة</a>
+</div>
+<div class="dash-card">
+    <div class="dash-card-body p-0">
+        {% if grades.items %}
+        <div class="table-responsive">
+            <table class="table dash-table mb-0">
+                <thead><tr><th>الطالب</th><th>المادة</th><th>الدرجة</th><th>النسبة</th><th>التقدير</th><th>النوع</th><th>الفصل</th><th>الإجراءات</th></tr></thead>
+                <tbody>
+                    {% for g in grades.items %}
+                    <tr>
+                        <td><div class="fw-semibold small">{{ g.student.full_name }}</div><div class="text-secondary" style="font-size:11px;">{{ g.student.student_id }}</div></td>
+                        <td>{{ g.subject.name }}</td>
+                        <td><strong class="text-{{ g.grade_color }}">{{ g.score|int }}/{{ g.total_score|int }}</strong></td>
+                        <td>{{ g.percentage }}%</td>
+                        <td><span class="badge bg-{{ g.grade_color }}-subtle text-{{ g.grade_color }}">{{ g.letter_grade }}</span></td>
+                        <td><small class="text-secondary">{{ g.exam_type }}</small></td>
+                        <td><small class="text-secondary">{{ g.term }}</small></td>
+                        <td>
+                            <div class="action-btns d-flex gap-1">
+                                <a href="{{ url_for('admin_grade_edit', id=g.id) }}" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
+                                <form method="POST" action="{{ url_for('admin_grade_delete', id=g.id) }}" style="display:inline;">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger btn-delete" data-confirm="حذف هذه الدرجة؟"><i class="bi bi-trash"></i></button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <!-- Pagination -->
+        {% if grades.pages > 1 %}
+        <div class="p-3"><nav><ul class="pagination mb-0 justify-content-center">
+            {% if grades.has_prev %}<li class="page-item"><a class="page-link" href="{{ url_for('admin_grades', page=grades.prev_num) }}"><i class="bi bi-chevron-right"></i></a></li>{% endif %}
+            {% for p in grades.iter_pages() %}{% if p %}<li class="page-item {% if p == grades.page %}active{% endif %}"><a class="page-link" href="{{ url_for('admin_grades', page=p) }}">{{ p }}</a></li>{% else %}<li class="page-item disabled"><span class="page-link">...</span></li>{% endif %}{% endfor %}
+            {% if grades.has_next %}<li class="page-item"><a class="page-link" href="{{ url_for('admin_grades', page=grades.next_num) }}"><i class="bi bi-chevron-left"></i></a></li>{% endif %}
+        </ul></nav></div>
+        {% endif %}
+        {% else %}
+        <div class="empty-state py-5"><i class="bi bi-journal-x d-block fs-1 text-secondary mb-3"></i><h5>لا توجد درجات</h5><a href="{{ url_for('admin_grade_add') }}" class="btn btn-primary mt-2">إضافة درجة</a></div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

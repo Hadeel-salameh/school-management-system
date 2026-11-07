@@ -1,0 +1,63 @@
+{% extends "dashboard_layout.html" %}
+{% block title %}التقارير{% endblock %}
+{% block sidebar_nav %}
+<a href="{{ url_for('admin_dashboard') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-speedometer2"></i></div><span>الرئيسية</span></a>
+<a href="{{ url_for('admin_students') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-people-fill"></i></div><span>الطلاب</span></a>
+<a href="{{ url_for('admin_teachers') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-person-badge-fill"></i></div><span>المعلمون</span></a>
+<a href="{{ url_for('admin_grades') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-journal-text"></i></div><span>الدرجات</span></a>
+<a href="{{ url_for('admin_reports') }}" class="sidebar-link active"><div class="link-icon"><i class="bi bi-bar-chart-fill"></i></div><span>التقارير</span></a>
+{% endblock %}
+{% block breadcrumb_items %}<li class="breadcrumb-item active">التقارير</li>{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1 class="page-header-title">التقارير والإحصائيات</h1>
+    <button onclick="printReport()" class="btn btn-outline-primary"><i class="bi bi-printer me-2"></i>طباعة</button>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-3"><div class="stat-widget"><div class="widget-icon blue"><i class="bi bi-people-fill"></i></div><div class="widget-info"><div class="widget-value">{{ stats.students }}</div><div class="widget-label">الطلاب</div></div></div></div>
+    <div class="col-md-3"><div class="stat-widget"><div class="widget-icon green"><i class="bi bi-person-badge-fill"></i></div><div class="widget-info"><div class="widget-value">{{ stats.teachers }}</div><div class="widget-label">المعلمون</div></div></div></div>
+    <div class="col-md-3"><div class="stat-widget"><div class="widget-icon orange"><i class="bi bi-building"></i></div><div class="widget-info"><div class="widget-value">{{ stats.classes }}</div><div class="widget-label">الصفوف</div></div></div></div>
+    <div class="col-md-3"><div class="stat-widget"><div class="widget-icon purple"><i class="bi bi-book-fill"></i></div><div class="widget-info"><div class="widget-value">{{ stats.subjects }}</div><div class="widget-label">المواد</div></div></div></div>
+</div>
+
+{% if grades_by_subject %}
+<div class="dash-card">
+    <div class="dash-card-header"><h5 class="dash-card-title"><i class="bi bi-bar-chart text-primary me-2"></i>متوسط الدرجات حسب المادة</h5></div>
+    <div class="dash-card-body">
+        <div class="chart-container mb-4" style="height:280px;"><canvas id="subjectChart"></canvas></div>
+        <div class="table-responsive">
+            <table class="table dash-table mb-0">
+                <thead><tr><th>المادة</th><th>متوسط الدرجة</th><th>عدد الدرجات</th><th>النسبة</th></tr></thead>
+                <tbody>
+                    {% for row in grades_by_subject %}
+                    {% set pct = (row.avg_score / 100 * 100)|round(1) if row.avg_score else 0 %}
+                    <tr>
+                        <td class="fw-semibold">{{ row[0] }}</td>
+                        <td><strong class="text-primary">{{ row[1]|round(1) if row[1] else 0 }}</strong></td>
+                        <td>{{ row[2] }}</td>
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <div class="progress flex-grow-1" style="height:6px;"><div class="progress-bar" style="width:{{ pct }}%"></div></div>
+                                <small>{{ pct }}%</small>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+{% block extra_js %}
+<script>
+{% if grades_by_subject %}
+initBarChart('subjectChart',
+    [{% for row in grades_by_subject %}'{{ row[0] }}',{% endfor %}],
+    [{% for row in grades_by_subject %}{{ row[1]|round(1) if row[1] else 0 }},{% endfor %}]
+);
+{% endif %}
+</script>
+{% endblock %}

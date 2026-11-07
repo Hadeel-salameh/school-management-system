@@ -1,0 +1,61 @@
+{% extends "dashboard_layout.html" %}
+{% block title %}الاختبارات{% endblock %}
+{% block sidebar_nav %}
+<a href="{{ url_for('teacher_dashboard') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-speedometer2"></i></div><span>الرئيسية</span></a>
+<a href="{{ url_for('teacher_students') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-people-fill"></i></div><span>الطلاب</span></a>
+<a href="{{ url_for('teacher_grades') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-journal-text"></i></div><span>الدرجات</span></a>
+<a href="{{ url_for('teacher_attendance') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-calendar-check-fill"></i></div><span>الحضور</span></a>
+<a href="{{ url_for('teacher_assignments') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-file-earmark-text-fill"></i></div><span>الواجبات</span></a>
+<a href="{{ url_for('teacher_exams') }}" class="sidebar-link active"><div class="link-icon"><i class="bi bi-clipboard-fill"></i></div><span>الاختبارات</span></a>
+{% endblock %}
+{% block breadcrumb_items %}<li class="breadcrumb-item active">الاختبارات</li>{% endblock %}
+{% block content %}
+<div class="page-header"><h1 class="page-header-title">إدارة الاختبارات</h1></div>
+<div class="row g-4">
+    <div class="col-lg-4">
+        <div class="dash-card">
+            <div class="dash-card-header"><h5 class="dash-card-title">إضافة اختبار جديد</h5></div>
+            <div class="dash-card-body">
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    <div class="mb-3"><label class="form-label">عنوان الاختبار *</label>{{ form.title(class="form-control") }}</div>
+                    <div class="mb-3"><label class="form-label">المادة *</label>{{ form.subject_id(class="form-select") }}</div>
+                    <div class="mb-3"><label class="form-label">الصف</label>{{ form.class_id(class="form-select") }}</div>
+                    <div class="mb-3"><label class="form-label">التاريخ</label>{{ form.exam_date(class="form-control", type="date") }}</div>
+                    <div class="mb-3"><label class="form-label">نوع الاختبار</label>{{ form.exam_type(class="form-select") }}</div>
+                    <div class="mb-3"><label class="form-label">الدرجة الكلية</label>{{ form.total_marks(class="form-control") }}</div>
+                    <div class="mb-3"><label class="form-label">القاعة</label>{{ form.location(class="form-control") }}</div>
+                    <button type="submit" class="btn btn-primary w-100"><i class="bi bi-plus me-2"></i>إضافة الاختبار</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-8">
+        <div class="dash-card">
+            <div class="dash-card-header"><h5 class="dash-card-title">الاختبارات ({{ exams|length }})</h5></div>
+            <div class="dash-card-body p-0">
+                {% if exams %}
+                <div class="table-responsive">
+                    <table class="table dash-table mb-0">
+                        <thead><tr><th>الاختبار</th><th>المادة</th><th>التاريخ</th><th>النوع</th><th>الدرجة</th></tr></thead>
+                        <tbody>
+                            {% for exam in exams %}
+                            <tr>
+                                <td class="fw-semibold">{{ exam.title }}</td>
+                                <td>{{ exam.subject.name }}</td>
+                                <td>{% if exam.exam_date %}<small>{{ exam.exam_date.strftime('%Y-%m-%d') }}</small>{% else %}-{% endif %}</td>
+                                <td><span class="badge bg-info-subtle text-info">{{ exam.exam_type }}</span></td>
+                                <td><span class="badge bg-primary-soft text-primary">{{ exam.total_marks }}</span></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state py-5"><i class="bi bi-clipboard-x d-block fs-1 text-secondary mb-3"></i><p>لا توجد اختبارات</p></div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

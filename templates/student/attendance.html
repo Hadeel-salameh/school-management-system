@@ -1,0 +1,80 @@
+{% extends "dashboard_layout.html" %}
+{% block title %}الحضور والغياب{% endblock %}
+{% block sidebar_nav %}
+<a href="{{ url_for('student_dashboard') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-speedometer2"></i></div><span>الرئيسية</span></a>
+<a href="{{ url_for('student_profile') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-person-fill"></i></div><span>الملف الشخصي</span></a>
+<a href="{{ url_for('student_grades') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-journal-text"></i></div><span>الدرجات والنتائج</span></a>
+<a href="{{ url_for('student_attendance') }}" class="sidebar-link active"><div class="link-icon"><i class="bi bi-calendar-check-fill"></i></div><span>الحضور والغياب</span></a>
+<a href="{{ url_for('student_schedule') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-clock-fill"></i></div><span>الجدول الدراسي</span></a>
+<a href="{{ url_for('student_assignments') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-file-earmark-text-fill"></i></div><span>الواجبات</span></a>
+<a href="{{ url_for('student_reports') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-bar-chart-fill"></i></div><span>التقارير</span></a>
+{% endblock %}
+{% block breadcrumb_items %}<li class="breadcrumb-item active">الحضور والغياب</li>{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1 class="page-header-title">الحضور والغياب</h1>
+</div>
+
+<!-- Stats -->
+{% set total = attendances|length %}
+{% set present = attendances|selectattr('status','equalto','present')|list|length %}
+{% set absent = attendances|selectattr('status','equalto','absent')|list|length %}
+{% set late = attendances|selectattr('status','equalto','late')|list|length %}
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="stat-widget"><div class="widget-icon blue"><i class="bi bi-calendar3"></i></div>
+            <div class="widget-info"><div class="widget-value">{{ total }}</div><div class="widget-label">إجمالي الأيام</div></div></div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-widget"><div class="widget-icon green"><i class="bi bi-check-circle-fill"></i></div>
+            <div class="widget-info"><div class="widget-value">{{ present }}</div><div class="widget-label">أيام الحضور</div></div></div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-widget"><div class="widget-icon red"><i class="bi bi-x-circle-fill"></i></div>
+            <div class="widget-info"><div class="widget-value">{{ absent }}</div><div class="widget-label">أيام الغياب</div></div></div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-widget"><div class="widget-icon orange"><i class="bi bi-clock-history"></i></div>
+            <div class="widget-info"><div class="widget-value">{{ late }}</div><div class="widget-label">أيام التأخر</div></div></div>
+    </div>
+</div>
+
+<div class="dash-card">
+    <div class="dash-card-header">
+        <h5 class="dash-card-title"><i class="bi bi-calendar-check text-primary me-2"></i>سجل الحضور</h5>
+    </div>
+    <div class="dash-card-body p-0">
+        {% if attendances %}
+        <div class="table-responsive">
+            <table class="table dash-table mb-0">
+                <thead>
+                    <tr><th>التاريخ</th><th>المادة</th><th>الحالة</th><th>ملاحظات</th></tr>
+                </thead>
+                <tbody>
+                    {% for att in attendances %}
+                    <tr>
+                        <td>{{ att.date.strftime('%Y-%m-%d') }}</td>
+                        <td>{{ att.subject.name if att.subject else 'عام' }}</td>
+                        <td>
+                            {% if att.status == 'present' %}
+                                <span class="badge bg-success-subtle text-success">حاضر</span>
+                            {% elif att.status == 'absent' %}
+                                <span class="badge bg-danger-subtle text-danger">غائب</span>
+                            {% elif att.status == 'late' %}
+                                <span class="badge bg-warning-subtle text-warning">متأخر</span>
+                            {% else %}
+                                <span class="badge bg-secondary-subtle text-secondary">بعذر</span>
+                            {% endif %}
+                        </td>
+                        <td><small class="text-secondary">{{ att.notes or '-' }}</small></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state py-5"><i class="bi bi-calendar-x d-block fs-1 text-secondary mb-3"></i><p>لا توجد سجلات حضور</p></div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

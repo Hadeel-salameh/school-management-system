@@ -1,0 +1,45 @@
+{% extends "dashboard_layout.html" %}
+{% block title %}الواجبات{% endblock %}
+{% block sidebar_nav %}
+<a href="{{ url_for('student_dashboard') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-speedometer2"></i></div><span>الرئيسية</span></a>
+<a href="{{ url_for('student_profile') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-person-fill"></i></div><span>الملف الشخصي</span></a>
+<a href="{{ url_for('student_grades') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-journal-text"></i></div><span>الدرجات والنتائج</span></a>
+<a href="{{ url_for('student_attendance') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-calendar-check-fill"></i></div><span>الحضور والغياب</span></a>
+<a href="{{ url_for('student_schedule') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-clock-fill"></i></div><span>الجدول الدراسي</span></a>
+<a href="{{ url_for('student_assignments') }}" class="sidebar-link active"><div class="link-icon"><i class="bi bi-file-earmark-text-fill"></i></div><span>الواجبات</span></a>
+<a href="{{ url_for('student_reports') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-bar-chart-fill"></i></div><span>التقارير</span></a>
+{% endblock %}
+{% block breadcrumb_items %}<li class="breadcrumb-item active">الواجبات</li>{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1 class="page-header-title">الواجبات والتكاليف</h1>
+</div>
+{% if assignments %}
+<div class="row g-4">
+    {% for assignment in assignments %}
+    <div class="col-md-6">
+        <div class="dash-card h-100">
+            <div class="dash-card-body">
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="badge bg-primary-soft text-primary">{{ assignment.subject.name }}</span>
+                    {% if assignment.due_date %}
+                    <small class="text-muted"><i class="bi bi-calendar me-1"></i>{{ assignment.due_date.strftime('%Y-%m-%d') }}</small>
+                    {% endif %}
+                </div>
+                <h5 class="fw-bold mb-2">{{ assignment.title }}</h5>
+                {% if assignment.description %}
+                <p class="text-secondary small mb-3">{{ assignment.description[:100] }}...</p>
+                {% endif %}
+                <div class="d-flex justify-content-between align-items-center">
+                    <span class="text-secondary small">الدرجة: {{ assignment.total_marks }}</span>
+                    <span class="badge bg-warning-subtle text-warning">معلق</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="dash-card"><div class="empty-state py-5"><i class="bi bi-file-earmark-x d-block fs-1 text-secondary mb-3"></i><p>لا توجد واجبات حالياً</p></div></div>
+{% endif %}
+{% endblock %}

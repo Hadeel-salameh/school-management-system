@@ -1,0 +1,300 @@
+{% extends "dashboard_layout.html" %}
+
+{% block title %}لوحة الإدارة{% endblock %}
+
+{% block sidebar_user_info %}
+    <span class="user-name">مدير النظام</span>
+    <span class="user-role">مدير المدرسة</span>
+{% endblock %}
+
+{% block sidebar_nav %}
+<span class="nav-section-title">القائمة الرئيسية</span>
+<a href="{{ url_for('admin_dashboard') }}" class="sidebar-link active">
+    <div class="link-icon"><i class="bi bi-speedometer2"></i></div><span>الرئيسية</span>
+</a>
+
+<span class="nav-section-title">إدارة الأفراد</span>
+<a href="{{ url_for('admin_students') }}" class="sidebar-link">
+    <div class="link-icon"><i class="bi bi-people-fill"></i></div><span>إدارة الطلاب</span>
+</a>
+<a href="{{ url_for('admin_teachers') }}" class="sidebar-link">
+    <div class="link-icon"><i class="bi bi-person-badge-fill"></i></div><span>إدارة المعلمين</span>
+</a>
+<a href="{{ url_for('admin_users') }}" class="sidebar-link">
+    <div class="link-icon"><i class="bi bi-person-gear"></i></div><span>إدارة المستخدمين</span>
+</a>
+
+<span class="nav-section-title">إدارة الدراسة</span>
+<a href="{{ url_for('admin_classes') }}" class="sidebar-link">
+    <div class="link-icon"><i class="bi bi-building"></i></div><span>إدارة الصفوف</span>
+</a>
+<a href="{{ url_for('admin_subjects') }}" class="sidebar-link">
+    <div class="link-icon"><i class="bi bi-book-fill"></i></div><span>إدارة المواد</span>
+</a>
+<a href="{{ url_for('admin_grades') }}" class="sidebar-link">
+    <div class="link-icon"><i class="bi bi-journal-text"></i></div><span>الدرجات</span>
+</a>
+<a href="{{ url_for('admin_attendance') }}" class="sidebar-link">
+    <div class="link-icon"><i class="bi bi-calendar-check-fill"></i></div><span>الحضور والغياب</span>
+</a>
+<a href="{{ url_for('admin_exams') }}" class="sidebar-link">
+    <div class="link-icon"><i class="bi bi-clipboard-fill"></i></div><span>الاختبارات</span>
+</a>
+
+<span class="nav-section-title">أخرى</span>
+<a href="{{ url_for('admin_announcements') }}" class="sidebar-link">
+    <div class="link-icon"><i class="bi bi-megaphone-fill"></i></div><span>الإعلانات</span>
+</a>
+<a href="{{ url_for('admin_reports') }}" class="sidebar-link">
+    <div class="link-icon"><i class="bi bi-bar-chart-fill"></i></div><span>التقارير</span>
+</a>
+<a href="{{ url_for('index') }}" class="sidebar-link">
+    <div class="link-icon"><i class="bi bi-house-fill"></i></div><span>الموقع الرئيسي</span>
+</a>
+{% endblock %}
+
+{% block breadcrumb_items %}
+    <li class="breadcrumb-item active">لوحة الإدارة</li>
+{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<div class="page-header">
+    <div>
+        <h1 class="page-header-title">لوحة إدارة المدرسة 🏫</h1>
+        <p class="page-header-sub">نظرة عامة على جميع إحصائيات المدرسة</p>
+    </div>
+</div>
+
+<!-- Main Stats -->
+<div class="row g-4 mb-4">
+    <div class="col-lg-3 col-md-6">
+        <div class="stat-widget">
+            <div class="widget-icon blue"><i class="bi bi-people-fill"></i></div>
+            <div class="widget-info">
+                <div class="widget-value counter-animate">{{ stats.students }}</div>
+                <div class="widget-label">إجمالي الطلاب</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="stat-widget">
+            <div class="widget-icon green"><i class="bi bi-person-badge-fill"></i></div>
+            <div class="widget-info">
+                <div class="widget-value counter-animate">{{ stats.teachers }}</div>
+                <div class="widget-label">المعلمون</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="stat-widget">
+            <div class="widget-icon orange"><i class="bi bi-building"></i></div>
+            <div class="widget-info">
+                <div class="widget-value counter-animate">{{ stats.classes }}</div>
+                <div class="widget-label">الصفوف الدراسية</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="stat-widget">
+            <div class="widget-icon purple"><i class="bi bi-calendar-check-fill"></i></div>
+            <div class="widget-info">
+                <div class="widget-value">{{ attendance_pct }}%</div>
+                <div class="widget-label">نسبة الحضور العامة</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-lg-3 col-md-6">
+        <div class="stat-widget">
+            <div class="widget-icon cyan"><i class="bi bi-book-fill"></i></div>
+            <div class="widget-info">
+                <div class="widget-value counter-animate">{{ stats.subjects }}</div>
+                <div class="widget-label">المواد الدراسية</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-3 col-md-6">
+        <div class="stat-widget">
+            <div class="widget-icon red"><i class="bi bi-person-gear"></i></div>
+            <div class="widget-info">
+                <div class="widget-value counter-animate">{{ stats.users }}</div>
+                <div class="widget-label">إجمالي المستخدمين</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row g-4 mb-4">
+    <div class="col-lg-8">
+        <div class="dash-card">
+            <div class="dash-card-header">
+                <h5 class="dash-card-title">
+                    <i class="bi bi-graph-up text-primary me-2"></i>
+                    نسبة الحضور الشهرية
+                </h5>
+            </div>
+            <div class="dash-card-body">
+                <div class="chart-container" style="height:240px;">
+                    <canvas id="attendanceChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="dash-card">
+            <div class="dash-card-header">
+                <h5 class="dash-card-title">
+                    <i class="bi bi-pie-chart-fill text-primary me-2"></i>
+                    توزيع الطلاب حسب الصفوف
+                </h5>
+            </div>
+            <div class="dash-card-body">
+                <div class="chart-container" style="height:240px;">
+                    <canvas id="classChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Data -->
+<div class="row g-4">
+    <!-- Recent Students -->
+    <div class="col-lg-7">
+        <div class="dash-card">
+            <div class="dash-card-header">
+                <h5 class="dash-card-title">
+                    <i class="bi bi-people-fill text-primary me-2"></i>
+                    آخر الطلاب المسجلين
+                </h5>
+                <a href="{{ url_for('admin_students') }}" class="btn btn-sm btn-outline-primary">عرض الكل</a>
+            </div>
+            <div class="dash-card-body p-0">
+                {% if recent_students %}
+                <div class="table-responsive">
+                    <table class="table dash-table mb-0">
+                        <thead><tr><th>الطالب</th><th>الرقم الطلابي</th><th>الصف</th><th>المعدل</th><th>الحضور</th></tr></thead>
+                        <tbody>
+                            {% for st in recent_students %}
+                            <tr>
+                                <td>
+                                    <div class="student-name-cell">
+                                        <div class="student-avatar">{{ st.first_name[0] }}</div>
+                                        <div>
+                                            <div class="student-name">{{ st.full_name }}</div>
+                                            <div class="student-id">{{ st.user.email or '' }}</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><code class="small">{{ st.student_id }}</code></td>
+                                <td><small>{{ st.class_.name if st.class_ else '-' }}</small></td>
+                                <td><strong class="text-primary">{{ st.average_grade }}</strong></td>
+                                <td>
+                                    <span class="badge bg-{% if st.attendance_percentage >= 80 %}success{% else %}warning{% endif %}-subtle
+                                                  text-{% if st.attendance_percentage >= 80 %}success{% else %}warning{% endif %}">
+                                        {{ st.attendance_percentage }}%
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="empty-state py-4"><p class="text-secondary">لا يوجد طلاب</p></div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Announcements & Quick Actions -->
+    <div class="col-lg-5">
+        <!-- Quick Actions -->
+        <div class="dash-card mb-4">
+            <div class="dash-card-header">
+                <h5 class="dash-card-title">إجراءات سريعة</h5>
+            </div>
+            <div class="dash-card-body">
+                <div class="row g-2">
+                    <div class="col-6">
+                        <a href="{{ url_for('admin_student_add') }}" class="btn btn-outline-primary w-100 py-2">
+                            <i class="bi bi-person-plus d-block fs-4 mb-1"></i>
+                            <small>إضافة طالب</small>
+                        </a>
+                    </div>
+                    <div class="col-6">
+                        <a href="{{ url_for('admin_teacher_add') }}" class="btn btn-outline-success w-100 py-2">
+                            <i class="bi bi-person-badge d-block fs-4 mb-1"></i>
+                            <small>إضافة معلم</small>
+                        </a>
+                    </div>
+                    <div class="col-6">
+                        <a href="{{ url_for('admin_announcement_add') }}" class="btn btn-outline-warning w-100 py-2">
+                            <i class="bi bi-megaphone d-block fs-4 mb-1"></i>
+                            <small>نشر إعلان</small>
+                        </a>
+                    </div>
+                    <div class="col-6">
+                        <a href="{{ url_for('admin_reports') }}" class="btn btn-outline-info w-100 py-2">
+                            <i class="bi bi-bar-chart d-block fs-4 mb-1"></i>
+                            <small>التقارير</small>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Announcements -->
+        <div class="dash-card">
+            <div class="dash-card-header">
+                <h5 class="dash-card-title">
+                    <i class="bi bi-megaphone-fill text-primary me-2"></i>
+                    آخر الإعلانات
+                </h5>
+                <a href="{{ url_for('admin_announcements') }}" class="btn btn-sm btn-outline-primary">الكل</a>
+            </div>
+            <div class="dash-card-body p-0">
+                {% for ann in recent_announcements %}
+                <div class="p-3 border-bottom">
+                    <div class="d-flex gap-2 align-items-start">
+                        <div class="bg-{% if ann.is_pinned %}warning{% else %}primary{% endif %}-soft rounded-2 p-2 flex-shrink-0">
+                            <i class="bi bi-{% if ann.is_pinned %}pin-fill{% else %}megaphone{% endif %} text-{% if ann.is_pinned %}warning{% else %}primary{% endif %} small"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <p class="fw-semibold mb-0 small">{{ ann.title }}</p>
+                            <div class="d-flex justify-content-between align-items-center mt-1">
+                                <span class="badge bg-light text-secondary" style="font-size:10px;">
+                                    {{ {'all':'الجميع','student':'الطلاب','teacher':'المعلمون'}.get(ann.target_role, ann.target_role) }}
+                                </span>
+                                <small class="text-muted">{{ ann.created_at.strftime('%Y-%m-%d') }}</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div class="empty-state py-4"><p class="text-secondary small">لا توجد إعلانات</p></div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Attendance line chart
+initAttendanceChart('attendanceChart',
+    ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو'],
+    [88, 92, 85, 90, 95, {{ attendance_pct }}]
+);
+
+// Classes doughnut chart
+const classLabels = [{% for cls in classes %}'{{ cls.name }}',{% endfor %}];
+const classCounts = [{% for cls in classes %}{{ cls.students.count() }},{% endfor %}];
+initGradeChart('classChart', classLabels, classCounts);
+</script>
+{% endblock %}

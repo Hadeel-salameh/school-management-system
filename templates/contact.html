@@ -1,0 +1,151 @@
+{% extends "layout.html" %}
+
+{% block title %}تواصل معنا{% endblock %}
+
+{% block content %}
+
+<!-- Page Hero -->
+<section class="page-hero">
+    <div class="container">
+        <div class="d-flex align-items-center gap-3">
+            <div class="bg-white bg-opacity-25 rounded-3 p-2">
+                <i class="bi bi-envelope-fill text-white fs-4"></i>
+            </div>
+            <div>
+                <h1 class="page-hero-title mb-1">تواصل معنا</h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item"><a href="{{ url_for('index') }}">الرئيسية</a></li>
+                        <li class="breadcrumb-item active">تواصل معنا</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Contact Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row g-5">
+            <!-- Contact Info -->
+            <div class="col-lg-5">
+                <span class="section-badge">معلومات التواصل</span>
+                <h2 class="section-title">تواصل معنا</h2>
+                <p class="text-secondary mb-4">
+                    نحن هنا للإجابة على جميع استفساراتكم. لا تترددوا في التواصل معنا عبر أي من القنوات التالية.
+                </p>
+
+                <div class="contact-info-card">
+                    <div class="d-flex gap-3 align-items-start">
+                        <div class="contact-icon">
+                            <i class="bi bi-geo-alt-fill"></i>
+                        </div>
+                        <div>
+                            <h6 class="fw-bold mb-1">العنوان</h6>
+                            <p class="text-secondary small mb-0">123 شارع المدرسة، المدينة، الدولة</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="contact-info-card">
+                    <div class="d-flex gap-3 align-items-start">
+                        <div class="contact-icon">
+                            <i class="bi bi-telephone-fill"></i>
+                        </div>
+                        <div>
+                            <h6 class="fw-bold mb-1">الهاتف</h6>
+                            <p class="text-secondary small mb-0">+962 1 2345678</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="contact-info-card">
+                    <div class="d-flex gap-3 align-items-start">
+                        <div class="contact-icon">
+                            <i class="bi bi-envelope-fill"></i>
+                        </div>
+                        <div>
+                            <h6 class="fw-bold mb-1">البريد الإلكتروني</h6>
+                            <p class="text-secondary small mb-0">info@future-school.edu</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="contact-info-card">
+                    <div class="d-flex gap-3 align-items-start">
+                        <div class="contact-icon">
+                            <i class="bi bi-clock-fill"></i>
+                        </div>
+                        <div>
+                            <h6 class="fw-bold mb-1">ساعات العمل</h6>
+                            <p class="text-secondary small mb-0">السبت - الخميس: 7:00 ص - 3:00 م</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Map placeholder -->
+                <div class="rounded-3 overflow-hidden mt-3" style="height:200px; background:#e5e7eb; display:flex; align-items:center; justify-content:center;">
+                    <div class="text-center text-secondary">
+                        <i class="bi bi-geo-alt-fill fs-2 text-primary d-block mb-2"></i>
+                        <span>خريطة الموقع</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Form -->
+            <div class="col-lg-7">
+                <div class="contact-form-card">
+                    <h4 class="fw-bold mb-1">أرسل لنا رسالة</h4>
+                    <p class="text-secondary small mb-4">سنرد عليك في أقرب وقت ممكن خلال ساعات العمل.</p>
+
+                    <form method="POST" novalidate>
+                        {{ form.hidden_tag() }}
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">الاسم الكامل *</label>
+                                {{ form.full_name(class="form-control" + (" is-invalid" if form.full_name.errors else ""),
+                                                 placeholder="أدخل اسمك الكامل") }}
+                                {% for error in form.full_name.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">البريد الإلكتروني *</label>
+                                {{ form.email(class="form-control" + (" is-invalid" if form.email.errors else ""),
+                                             placeholder="أدخل بريدك الإلكتروني") }}
+                                {% for error in form.email.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">الموضوع *</label>
+                                {{ form.subject(class="form-control" + (" is-invalid" if form.subject.errors else ""),
+                                               placeholder="موضوع رسالتك") }}
+                                {% for error in form.subject.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">رسالتك *</label>
+                                {{ form.message(class="form-control" + (" is-invalid" if form.message.errors else ""),
+                                               placeholder="اكتب رسالتك هنا...",
+                                               rows="5") }}
+                                {% for error in form.message.errors %}
+                                    <div class="invalid-feedback">{{ error }}</div>
+                                {% endfor %}
+                            </div>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-primary px-5 py-2">
+                                    <i class="bi bi-send me-2"></i>إرسال الرسالة
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

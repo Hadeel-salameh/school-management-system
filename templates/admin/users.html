@@ -1,0 +1,58 @@
+{% extends "dashboard_layout.html" %}
+{% block title %}إدارة المستخدمين{% endblock %}
+{% block sidebar_nav %}
+<a href="{{ url_for('admin_dashboard') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-speedometer2"></i></div><span>الرئيسية</span></a>
+<a href="{{ url_for('admin_students') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-people-fill"></i></div><span>الطلاب</span></a>
+<a href="{{ url_for('admin_teachers') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-person-badge-fill"></i></div><span>المعلمون</span></a>
+<a href="{{ url_for('admin_users') }}" class="sidebar-link active"><div class="link-icon"><i class="bi bi-person-gear"></i></div><span>المستخدمون</span></a>
+<a href="{{ url_for('admin_classes') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-building"></i></div><span>الصفوف</span></a>
+<a href="{{ url_for('admin_announcements') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-megaphone-fill"></i></div><span>الإعلانات</span></a>
+<a href="{{ url_for('admin_reports') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-bar-chart-fill"></i></div><span>التقارير</span></a>
+{% endblock %}
+{% block breadcrumb_items %}<li class="breadcrumb-item active">المستخدمون</li>{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div><h1 class="page-header-title">إدارة المستخدمين</h1><p class="page-header-sub">{{ users|length }} مستخدم مسجل</p></div>
+    <a href="{{ url_for('admin_user_add') }}" class="btn btn-primary"><i class="bi bi-plus-lg me-2"></i>إضافة مستخدم</a>
+</div>
+<div class="dash-card">
+    <div class="dash-card-body p-0">
+        <div class="table-responsive">
+            <table class="table dash-table mb-0">
+                <thead><tr><th>المستخدم</th><th>الدور</th><th>الحالة</th><th>آخر دخول</th><th>تاريخ الإنشاء</th><th>الإجراءات</th></tr></thead>
+                <tbody>
+                    {% for user in users %}
+                    {% set role_map = {'admin': ('danger','مدير'), 'teacher': ('success','معلم'), 'student': ('primary','طالب')} %}
+                    {% set role_color, role_label = role_map.get(user.role, ('secondary', user.role)) %}
+                    <tr>
+                        <td>
+                            <div class="student-name-cell">
+                                <div class="student-avatar" style="background:linear-gradient(135deg,{% if user.role=='admin' %}#ef4444,#dc2626{% elif user.role=='teacher' %}#10b981,#059669{% else %}#1a56db,#1347c0{% endif %});">
+                                    {{ user.username[0].upper() }}
+                                </div>
+                                <div><div class="student-name">{{ user.username }}</div><div class="student-id">{{ user.email or '' }}</div></div>
+                            </div>
+                        </td>
+                        <td><span class="badge bg-{{ role_color }}-subtle text-{{ role_color }}">{{ role_label }}</span></td>
+                        <td><span class="badge bg-{% if user.is_active %}success{% else %}secondary{% endif %}-subtle text-{% if user.is_active %}success{% else %}secondary{% endif %}">{{ 'نشط' if user.is_active else 'معطل' }}</span></td>
+                        <td><small>{{ user.last_login.strftime('%Y-%m-%d') if user.last_login else 'لم يسجل بعد' }}</small></td>
+                        <td><small>{{ user.created_at.strftime('%Y-%m-%d') }}</small></td>
+                        <td>
+                            <div class="action-btns d-flex gap-1">
+                                <a href="{{ url_for('admin_user_edit', id=user.id) }}" class="btn btn-sm btn-outline-primary"><i class="bi bi-pencil"></i></a>
+                                {% if user.id != current_user.id %}
+                                <form method="POST" action="{{ url_for('admin_user_delete', id=user.id) }}" style="display:inline;">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger btn-delete" data-confirm="حذف المستخدم {{ user.username }}؟"><i class="bi bi-trash"></i></button>
+                                </form>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

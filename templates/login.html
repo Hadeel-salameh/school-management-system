@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول | مدرسة المستقبل الدولية</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.rtl.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body style="margin:0; padding:0;">
+
+<div class="login-page">
+    <!-- LEFT PANEL -->
+    <div class="login-left">
+        <div class="login-brand">
+            <div class="login-brand-logo">
+                <i class="bi bi-mortarboard-fill"></i>
+            </div>
+            <h1 class="login-brand-name">{{ school_name }}</h1>
+            <p class="login-brand-sub">{{ school_motto }}</p>
+
+            <div class="mt-4 text-center">
+                <h3 class="text-white fw-bold mb-2">مرحباً بك في</h3>
+                <h3 class="text-white fw-bold">{{ school_name }}</h3>
+                <p class="text-white opacity-75 mt-3">
+                    سجّل الدخول للوصول إلى نظام إدارة المدرسة
+                </p>
+            </div>
+
+            <div class="login-illustration mt-5">
+                <div class="d-flex flex-column gap-3 mt-3">
+                    <div class="d-flex align-items-center gap-3 bg-white bg-opacity-10 rounded-3 p-3">
+                        <i class="bi bi-shield-check-fill text-white fs-4"></i>
+                        <div>
+                            <div class="text-white fw-semibold">دخول آمن ومحمي</div>
+                            <div class="text-white opacity-75" style="font-size:12px">جميع بياناتك في أمان تام</div>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center gap-3 bg-white bg-opacity-10 rounded-3 p-3">
+                        <i class="bi bi-person-check-fill text-white fs-4"></i>
+                        <div>
+                            <div class="text-white fw-semibold">وصول مخصص حسب الدور</div>
+                            <div class="text-white opacity-75" style="font-size:12px">طالب، معلم، أو مدير النظام</div>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center gap-3 bg-white bg-opacity-10 rounded-3 p-3">
+                        <i class="bi bi-clock-fill text-white fs-4"></i>
+                        <div>
+                            <div class="text-white fw-semibold">متاح على مدار الساعة</div>
+                            <div class="text-white opacity-75" style="font-size:12px">وصول فوري لجميع خدمات المدرسة</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- RIGHT PANEL -->
+    <div class="login-right">
+        <div class="login-box">
+            <!-- Back Link -->
+            <a href="{{ url_for('index') }}" class="d-inline-flex align-items-center gap-2 text-secondary mb-4 small">
+                <i class="bi bi-arrow-right"></i>
+                العودة إلى الموقع
+            </a>
+
+            <h2 class="login-title mb-1">تسجيل الدخول</h2>
+            <p class="login-subtitle mb-4">أدخل بيانات حسابك للوصول إلى نظام المدرسة</p>
+
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show mb-4" role="alert">
+                            <i class="bi bi-{% if category == 'success' %}check-circle-fill{% elif category == 'danger' %}x-circle-fill{% else %}info-circle-fill{% endif %} me-2"></i>
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <!-- Role Selector -->
+            <div class="mb-4">
+                <label class="form-label fw-semibold">نوع المستخدم</label>
+                <div class="role-selector">
+                    <div class="role-btn {% if form.role.data == 'student' or not form.role.data %}active{% endif %}"
+                         data-role="student" onclick="selectRole('student', this)">
+                        <i class="bi bi-person-fill"></i>
+                        طالب
+                    </div>
+                    <div class="role-btn {% if form.role.data == 'teacher' %}active{% endif %}"
+                         data-role="teacher" onclick="selectRole('teacher', this)">
+                        <i class="bi bi-person-badge-fill"></i>
+                        معلم
+                    </div>
+                    <div class="role-btn {% if form.role.data == 'admin' %}active{% endif %}"
+                         data-role="admin" onclick="selectRole('admin', this)">
+                        <i class="bi bi-shield-fill-check"></i>
+                        مدير
+                    </div>
+                </div>
+                {% for error in form.role.errors %}
+                    <div class="text-danger small mt-1">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <!-- Login Form -->
+            <form method="POST" action="{{ url_for('login') }}" id="loginForm" novalidate>
+                {{ form.hidden_tag() }}
+                <input type="hidden" name="role" id="roleInput"
+                       value="{{ form.role.data or 'student' }}">
+
+                <!-- Username -->
+                <div class="mb-3">
+                    <label for="username" class="form-label fw-semibold">
+                        <i class="bi bi-person me-1"></i>اسم المستخدم
+                    </label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0">
+                            <i class="bi bi-person text-secondary"></i>
+                        </span>
+                        <input type="text"
+                               class="form-control border-start-0 {% if form.username.errors %}is-invalid{% endif %}"
+                               id="username" name="username"
+                               value="{{ form.username.data or '' }}"
+                               placeholder="أدخل اسم المستخدم"
+                               autocomplete="username" required>
+                        {% if form.username.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.username.errors %}{{ error }}{% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Password -->
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <label for="password" class="form-label fw-semibold mb-0">
+                            <i class="bi bi-lock me-1"></i>كلمة المرور
+                        </label>
+                        <a href="#" class="small text-primary">نسيت كلمة المرور؟</a>
+                    </div>
+                    <div class="input-group">
+                        <span class="input-group-text bg-light border-end-0">
+                            <i class="bi bi-lock text-secondary"></i>
+                        </span>
+                        <input type="password"
+                               class="form-control border-start-0 border-start-0 {% if form.password.errors %}is-invalid{% endif %}"
+                               id="password" name="password"
+                               placeholder="أدخل كلمة المرور"
+                               autocomplete="current-password" required>
+                        <button class="input-group-text bg-light border-start-0 cursor-pointer"
+                                type="button" onclick="togglePassword()">
+                            <i class="bi bi-eye text-secondary" id="eyeIcon"></i>
+                        </button>
+                        {% if form.password.errors %}
+                            <div class="invalid-feedback">
+                                {% for error in form.password.errors %}{{ error }}{% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Remember Me -->
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox"
+                               id="remember_me" name="remember_me"
+                               {% if form.remember_me.data %}checked{% endif %}>
+                        <label class="form-check-label small" for="remember_me">تذكرني</label>
+                    </div>
+                </div>
+
+                <!-- Submit -->
+                <button type="submit" class="btn-login-submit">
+                    <i class="bi bi-box-arrow-in-right me-2"></i>تسجيل الدخول
+                </button>
+            </form>
+
+            <!-- Demo Credentials -->
+            <div class="mt-4 p-3 bg-light rounded-3 border">
+                <p class="small fw-bold text-dark mb-2">
+                    <i class="bi bi-info-circle-fill text-primary me-1"></i>
+                    بيانات الدخول التجريبية:
+                </p>
+                <div class="row g-2">
+                    <div class="col-12">
+                        <div class="d-flex justify-content-between small">
+                            <span class="text-secondary">مدير النظام:</span>
+                            <span class="fw-semibold">admin / admin123</span>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="d-flex justify-content-between small">
+                            <span class="text-secondary">معلم:</span>
+                            <span class="fw-semibold">teacher_t001 / teacher123</span>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="d-flex justify-content-between small">
+                            <span class="text-secondary">طالب:</span>
+                            <span class="fw-semibold">student_s001 / student123</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <p class="text-center text-secondary small mt-4">
+                &copy; {{ current_year }} {{ school_name }} - جميع الحقوق محفوظة
+            </p>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+function selectRole(role, el) {
+    document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+    document.getElementById('roleInput').value = role;
+}
+
+function togglePassword() {
+    const input = document.getElementById('password');
+    const icon = document.getElementById('eyeIcon');
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.className = 'bi bi-eye-slash text-secondary';
+    } else {
+        input.type = 'password';
+        icon.className = 'bi bi-eye text-secondary';
+    }
+}
+
+// Auto-select role based on hidden input value
+window.addEventListener('DOMContentLoaded', () => {
+    const roleVal = document.getElementById('roleInput').value;
+    document.querySelectorAll('.role-btn').forEach(btn => {
+        if (btn.dataset.role === roleVal) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+});
+</script>
+</body>
+</html>

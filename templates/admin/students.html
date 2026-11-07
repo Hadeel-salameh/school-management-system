@@ -1,0 +1,141 @@
+{% extends "dashboard_layout.html" %}
+{% block title %}إدارة الطلاب{% endblock %}
+{% block sidebar_nav %}
+<a href="{{ url_for('admin_dashboard') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-speedometer2"></i></div><span>الرئيسية</span></a>
+<a href="{{ url_for('admin_students') }}" class="sidebar-link active"><div class="link-icon"><i class="bi bi-people-fill"></i></div><span>إدارة الطلاب</span></a>
+<a href="{{ url_for('admin_teachers') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-person-badge-fill"></i></div><span>إدارة المعلمين</span></a>
+<a href="{{ url_for('admin_users') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-person-gear"></i></div><span>المستخدمين</span></a>
+<a href="{{ url_for('admin_classes') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-building"></i></div><span>الصفوف</span></a>
+<a href="{{ url_for('admin_subjects') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-book-fill"></i></div><span>المواد</span></a>
+<a href="{{ url_for('admin_grades') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-journal-text"></i></div><span>الدرجات</span></a>
+<a href="{{ url_for('admin_attendance') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-calendar-check-fill"></i></div><span>الحضور</span></a>
+<a href="{{ url_for('admin_exams') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-clipboard-fill"></i></div><span>الاختبارات</span></a>
+<a href="{{ url_for('admin_announcements') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-megaphone-fill"></i></div><span>الإعلانات</span></a>
+<a href="{{ url_for('admin_reports') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-bar-chart-fill"></i></div><span>التقارير</span></a>
+{% endblock %}
+{% block breadcrumb_items %}<li class="breadcrumb-item active">إدارة الطلاب</li>{% endblock %}
+{% block content %}
+<div class="page-header">
+    <div>
+        <h1 class="page-header-title">إدارة الطلاب</h1>
+        <p class="page-header-sub">{{ students.total }} طالب مسجل</p>
+    </div>
+    <a href="{{ url_for('admin_student_add') }}" class="btn btn-primary">
+        <i class="bi bi-plus-lg me-2"></i>إضافة طالب جديد
+    </a>
+</div>
+
+<!-- Search -->
+<div class="dash-card mb-4">
+    <div class="dash-card-body py-3">
+        <form method="GET" class="d-flex gap-2">
+            <input type="text" name="search" value="{{ search }}"
+                   class="form-control" placeholder="بحث بالاسم أو الرقم الطلابي..." style="max-width:300px;">
+            <button type="submit" class="btn btn-primary"><i class="bi bi-search me-1"></i>بحث</button>
+            {% if search %}
+            <a href="{{ url_for('admin_students') }}" class="btn btn-outline-secondary">مسح</a>
+            {% endif %}
+        </form>
+    </div>
+</div>
+
+<div class="dash-card">
+    <div class="dash-card-body p-0">
+        {% if students.items %}
+        <div class="table-responsive">
+            <table class="table dash-table mb-0">
+                <thead>
+                    <tr><th>الطالب</th><th>الرقم الطلابي</th><th>الصف</th><th>المعدل</th><th>الحضور</th><th>الحالة</th><th>الإجراءات</th></tr>
+                </thead>
+                <tbody>
+                    {% for st in students.items %}
+                    <tr>
+                        <td>
+                            <div class="student-name-cell">
+                                <div class="student-avatar">{{ st.first_name[0] }}</div>
+                                <div>
+                                    <div class="student-name">{{ st.full_name }}</div>
+                                    <div class="student-id">{{ st.user.username }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td><code>{{ st.student_id }}</code></td>
+                        <td>{{ st.class_.name if st.class_ else '-' }}</td>
+                        <td><strong class="text-primary">{{ st.average_grade }}</strong></td>
+                        <td>
+                            <span class="badge bg-{% if st.attendance_percentage >= 80 %}success{% elif st.attendance_percentage >= 60 %}warning{% else %}danger{% endif %}-subtle
+                                          text-{% if st.attendance_percentage >= 80 %}success{% elif st.attendance_percentage >= 60 %}warning{% else %}danger{% endif %}">
+                                {{ st.attendance_percentage }}%
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge bg-{% if st.is_active %}success{% else %}secondary{% endif %}-subtle
+                                          text-{% if st.is_active %}success{% else %}secondary{% endif %}">
+                                {{ 'نشط' if st.is_active else 'غير نشط' }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="action-btns d-flex gap-1">
+                                <a href="{{ url_for('admin_student_edit', id=st.id) }}"
+                                   class="btn btn-sm btn-outline-primary" title="تعديل">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <form method="POST" action="{{ url_for('admin_student_delete', id=st.id) }}" style="display:inline;">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger btn-delete"
+                                            data-confirm="هل تريد حذف الطالب {{ st.full_name }}؟"
+                                            title="حذف">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        {% if students.pages > 1 %}
+        <div class="p-3">
+            <nav>
+                <ul class="pagination mb-0 justify-content-center">
+                    {% if students.has_prev %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('admin_students', page=students.prev_num, search=search) }}">
+                            <i class="bi bi-chevron-right"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+                    {% for p in students.iter_pages() %}
+                        {% if p %}
+                        <li class="page-item {% if p == students.page %}active{% endif %}">
+                            <a class="page-link" href="{{ url_for('admin_students', page=p, search=search) }}">{{ p }}</a>
+                        </li>
+                        {% else %}
+                        <li class="page-item disabled"><span class="page-link">...</span></li>
+                        {% endif %}
+                    {% endfor %}
+                    {% if students.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="{{ url_for('admin_students', page=students.next_num, search=search) }}">
+                            <i class="bi bi-chevron-left"></i>
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
+
+        {% else %}
+        <div class="empty-state py-5">
+            <i class="bi bi-people d-block fs-1 text-secondary mb-3"></i>
+            <h5 class="text-secondary">لا يوجد طلاب</h5>
+            <a href="{{ url_for('admin_student_add') }}" class="btn btn-primary mt-2">إضافة طالب</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

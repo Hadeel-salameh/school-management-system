@@ -1,0 +1,141 @@
+{% extends "layout.html" %}
+
+{% block title %}من نحن{% endblock %}
+
+{% block content %}
+
+<!-- Page Hero -->
+<section class="page-hero">
+    <div class="container">
+        <div class="d-flex align-items-center gap-3 mb-3">
+            <div class="bg-white bg-opacity-25 rounded-3 p-2">
+                <i class="bi bi-info-circle-fill text-white fs-4"></i>
+            </div>
+            <div>
+                <h1 class="page-hero-title mb-1">من نحن</h1>
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0">
+                        <li class="breadcrumb-item"><a href="{{ url_for('index') }}">الرئيسية</a></li>
+                        <li class="breadcrumb-item active">من نحن</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- About Content -->
+<section class="py-5">
+    <div class="container">
+        <div class="row g-5 align-items-center">
+            <div class="col-lg-6">
+                <img src="https://images.pexels.com/photos/8926848/pexels-photo-8926848.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=500&w=700"
+                     alt="عن المدرسة" class="img-fluid rounded-4 shadow-lg">
+            </div>
+            <div class="col-lg-6">
+                <span class="section-badge">نبذة عن المدرسة</span>
+                <h2 class="section-title">{{ school_name }}</h2>
+                <p class="text-secondary mb-4">
+                    مدرسة المستقبل الدولية مؤسسة تعليمية رائدة تأسست منذ أكثر من 20 عاماً بهدف تقديم تعليم
+                    متميز وشامل يجمع بين الأصالة والمعاصرة. نحن نؤمن بأن كل طالب يحمل في داخله طاقات
+                    إبداعية هائلة، ومهمتنا هي اكتشاف هذه الطاقات وتنميتها.
+                </p>
+                <p class="text-secondary mb-4">
+                    تضم مدرستنا أحدث المرافق التعليمية، من مختبرات علمية متطورة، وقاعات حاسوب مجهزة،
+                    ومكتبة ضخمة، وملاعب رياضية متكاملة، مما يوفر بيئة تعليمية مثالية لنمو الطلاب
+                    أكاديمياً واجتماعياً.
+                </p>
+                <div class="d-flex gap-3 flex-wrap">
+                    <a href="{{ url_for('contact') }}" class="btn btn-primary px-4">
+                        <i class="bi bi-telephone me-2"></i>تواصل معنا
+                    </a>
+                    <a href="{{ url_for('teachers_page') }}" class="btn btn-outline-primary px-4">
+                        <i class="bi bi-people me-2"></i>الكادر التعليمي
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats -->
+<section class="py-5 bg-light">
+    <div class="container">
+        <div class="row g-4 justify-content-center">
+            <div class="col-lg-3 col-md-6">
+                <div class="about-stat-card">
+                    <div class="stat-num">20<span class="stat-unit">+</span></div>
+                    <div class="stat-lbl">سنوات من الخبرة</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="about-stat-card">
+                    <div class="stat-num">50<span class="stat-unit">+</span></div>
+                    <div class="stat-lbl">معلم ومعلمة</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="about-stat-card">
+                    <div class="stat-num counter-animate">{{ students_count }}</div>
+                    <div class="stat-lbl">طالب وطالبة</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="about-stat-card">
+                    <div class="stat-num">15<span class="stat-unit">+</span></div>
+                    <div class="stat-lbl">جوائز وشهادات</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Vision & Mission -->
+<section class="py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="section-badge">قيمنا</span>
+            <h2 class="section-title">رؤيتنا ورسالتنا</h2>
+        </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="feature-card h-100">
+                    <div class="feature-icon">
+                        <i class="bi bi-eye-fill"></i>
+                    </div>
+                    <h5 class="feature-title">رؤيتنا</h5>
+                    <p class="feature-desc">
+                        أن نكون مدرسة رائدة محلياً وعالمياً في تقديم تعليم نوعي يُعد الطالب لمواجهة
+                        تحديات المستقبل بكفاءة عالية وقيم راسخة.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card h-100">
+                    <div class="feature-icon">
+                        <i class="bi bi-rocket-fill"></i>
+                    </div>
+                    <h5 class="feature-title">رسالتنا</h5>
+                    <p class="feature-desc">
+                        تقديم تعليم متميز في بيئة آمنة ومحفزة، وإعداد أجيال متعلمة ومبدعة وقادرة
+                        على قيادة مجتمعاتها نحو التقدم والازدهار.
+                    </p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="feature-card h-100">
+                    <div class="feature-icon">
+                        <i class="bi bi-gem"></i>
+                    </div>
+                    <h5 class="feature-title">قيمنا</h5>
+                    <p class="feature-desc">
+                        التميز، النزاهة، الابتكار، التعاون، والاحترام المتبادل. نحن نؤمن بأن هذه
+                        القيم هي أساس النجاح الحقيقي في الحياة.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

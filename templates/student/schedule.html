@@ -1,0 +1,49 @@
+{% extends "dashboard_layout.html" %}
+{% block title %}الجدول الدراسي{% endblock %}
+{% block sidebar_nav %}
+<a href="{{ url_for('student_dashboard') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-speedometer2"></i></div><span>الرئيسية</span></a>
+<a href="{{ url_for('student_profile') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-person-fill"></i></div><span>الملف الشخصي</span></a>
+<a href="{{ url_for('student_grades') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-journal-text"></i></div><span>الدرجات والنتائج</span></a>
+<a href="{{ url_for('student_attendance') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-calendar-check-fill"></i></div><span>الحضور والغياب</span></a>
+<a href="{{ url_for('student_schedule') }}" class="sidebar-link active"><div class="link-icon"><i class="bi bi-clock-fill"></i></div><span>الجدول الدراسي</span></a>
+<a href="{{ url_for('student_assignments') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-file-earmark-text-fill"></i></div><span>الواجبات</span></a>
+<a href="{{ url_for('student_reports') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-bar-chart-fill"></i></div><span>التقارير</span></a>
+{% endblock %}
+{% block breadcrumb_items %}<li class="breadcrumb-item active">الجدول الدراسي</li>{% endblock %}
+{% block content %}
+<div class="page-header">
+    <h1 class="page-header-title">الجدول الدراسي</h1>
+</div>
+
+{% set days = {0: 'الأحد', 1: 'الاثنين', 2: 'الثلاثاء', 3: 'الأربعاء', 4: 'الخميس'} %}
+{% set colors = ['#1a56db','#10b981','#f59e0b','#ef4444','#7c3aed','#06b6d4'] %}
+
+{% if schedule %}
+    {% for day_num, day_name in days.items() %}
+        {% set day_items = schedule|selectattr('day_of_week','equalto',day_num)|list %}
+        {% if day_items %}
+        <div class="dash-card mb-3">
+            <div class="dash-card-header">
+                <h5 class="dash-card-title"><i class="bi bi-calendar-day text-primary me-2"></i>{{ day_name }}</h5>
+            </div>
+            <div class="dash-card-body">
+                <div class="row g-3">
+                    {% for item in day_items %}
+                    <div class="col-md-4">
+                        <div class="p-3 rounded-3 border" style="border-right: 4px solid {{ colors[loop.index0 % 6] }} !important;">
+                            <div class="fw-bold mb-1">{{ item.subject.name }}</div>
+                            <div class="text-secondary small">{{ item.start_time }} - {{ item.end_time }}</div>
+                            {% if item.teacher %}<div class="text-secondary small">{{ item.teacher.full_name }}</div>{% endif %}
+                            {% if item.room %}<div class="text-secondary small"><i class="bi bi-geo-alt me-1"></i>{{ item.room }}</div>{% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    {% endfor %}
+{% else %}
+<div class="dash-card"><div class="empty-state py-5"><i class="bi bi-calendar-x d-block fs-1 text-secondary mb-3"></i><p>لا يوجد جدول دراسي مسجل</p></div></div>
+{% endif %}
+{% endblock %}

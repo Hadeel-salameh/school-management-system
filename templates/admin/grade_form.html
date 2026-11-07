@@ -1,0 +1,29 @@
+{% extends "dashboard_layout.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block sidebar_nav %}
+<a href="{{ url_for('admin_dashboard') }}" class="sidebar-link"><div class="link-icon"><i class="bi bi-speedometer2"></i></div><span>الرئيسية</span></a>
+<a href="{{ url_for('admin_grades') }}" class="sidebar-link active"><div class="link-icon"><i class="bi bi-journal-text"></i></div><span>الدرجات</span></a>
+{% endblock %}
+{% block breadcrumb_items %}
+<li class="breadcrumb-item"><a href="{{ url_for('admin_grades') }}">الدرجات</a></li>
+<li class="breadcrumb-item active">{{ title }}</li>
+{% endblock %}
+{% block content %}
+<div class="page-header"><h1 class="page-header-title">{{ title }}</h1><a href="{{ url_for('admin_grades') }}" class="btn btn-outline-secondary"><i class="bi bi-arrow-right me-2"></i>رجوع</a></div>
+<div class="admin-form-card" style="max-width:700px;">
+    <form method="POST" novalidate>
+        {{ form.hidden_tag() }}
+        <div class="row g-3">
+            <div class="col-md-6"><label class="form-label">{{ form.student_id.label.text }} *</label>{{ form.student_id(class="form-select") }}{% for e in form.student_id.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}</div>
+            <div class="col-md-6"><label class="form-label">{{ form.subject_id.label.text }} *</label>{{ form.subject_id(class="form-select") }}</div>
+            <div class="col-md-4"><label class="form-label">{{ form.score.label.text }} *</label>{{ form.score(class="form-control") }}</div>
+            <div class="col-md-4"><label class="form-label">{{ form.total_score.label.text }}</label>{{ form.total_score(class="form-control") }}</div>
+            <div class="col-md-4"><label class="form-label">{{ form.exam_type.label.text }}</label>{{ form.exam_type(class="form-select") }}</div>
+            <div class="col-md-6"><label class="form-label">{{ form.term.label.text }}</label>{{ form.term(class="form-select") }}</div>
+            <div class="col-md-6"><label class="form-label">{{ form.academic_year.label.text }}</label>{{ form.academic_year(class="form-control", placeholder="2024-2025") }}</div>
+            <div class="col-12"><label class="form-label">{{ form.remarks.label.text }}</label>{{ form.remarks(class="form-control", rows="3") }}</div>
+        </div>
+        <div class="d-flex gap-3 mt-4">{{ form.submit(class="btn btn-primary px-5") }}<a href="{{ url_for('admin_grades') }}" class="btn btn-outline-secondary">إلغاء</a></div>
+    </form>
+</div>
+{% endblock %}

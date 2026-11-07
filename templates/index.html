@@ -1,0 +1,317 @@
+{% extends "layout.html" %}
+
+{% block title %}الرئيسية{% endblock %}
+
+{% block content %}
+
+<!-- ====== HERO SECTION ====== -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6 hero-content">
+                <div class="hero-badge">
+                    <i class="bi bi-star-fill text-warning"></i>
+                    مدرسة معتمدة دولياً
+                </div>
+                <h1 class="hero-title">
+                    {{ school_name }}
+                    <br>
+                    <span>{{ school_motto }}</span>
+                </h1>
+                <p class="hero-subtitle">
+                    نحن نؤمن بأن التعليم هو الاستثمار الأفضل للمستقبل. نقدم بيئة تعليمية متكاملة
+                    تجمع بين الأصالة والحداثة لإعداد جيل واعٍ وقادر على قيادة المستقبل.
+                </p>
+                <div class="d-flex gap-3 flex-wrap">
+                    <a href="{{ url_for('about') }}" class="btn btn-light btn-lg px-4 fw-bold">
+                        <i class="bi bi-info-circle me-2"></i>اكتشف المزيد
+                    </a>
+                    <a href="{{ url_for('contact') }}" class="btn btn-outline-light btn-lg px-4">
+                        <i class="bi bi-telephone me-2"></i>تواصل معنا
+                    </a>
+                </div>
+                <div class="hero-stats">
+                    <div class="hero-stat">
+                        <div class="stat-number counter-animate">{{ stats.students }}</div>
+                        <div class="stat-label">طالب وطالبة</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="stat-number counter-animate">{{ stats.teachers }}</div>
+                        <div class="stat-label">معلم ومعلمة</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="stat-number">15+</div>
+                        <div class="stat-label">جائزة وشهادة</div>
+                    </div>
+                    <div class="hero-stat">
+                        <div class="stat-number">20+</div>
+                        <div class="stat-label">سنة من الخبرة</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="hero-image-wrapper">
+                    <img src="https://images.pexels.com/photos/8926848/pexels-photo-8926848.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200"
+                         alt="مدرسة المستقبل الدولية" class="img-fluid">
+                    <div class="hero-image-card">
+                        <div class="card-icon">
+                            <i class="bi bi-patch-check-fill"></i>
+                        </div>
+                        <div class="card-text">
+                            <strong>{{ stats.students }}+</strong><br>
+                            <small>طالب مسجل</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ====== FEATURES SECTION ====== -->
+<section class="features-section">
+    <div class="container">
+        <div class="text-center mb-5">
+            <span class="section-badge">ما نقدمه</span>
+            <h2 class="section-title">لماذا تختار مدرستنا؟</h2>
+            <p class="section-subtitle">نقدم بيئة تعليمية متكاملة تضمن النجاح والتفوق لجميع طلابنا</p>
+        </div>
+        <div class="row g-4">
+            <div class="col-lg-3 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-mortarboard-fill"></i>
+                    </div>
+                    <h5 class="feature-title">تعليم متميز</h5>
+                    <p class="feature-desc">مناهج دراسية متطورة تجمع بين النظري والتطبيقي لإعداد الطلاب بشكل شامل.</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-people-fill"></i>
+                    </div>
+                    <h5 class="feature-title">كادر متخصص</h5>
+                    <p class="feature-desc">فريق من أفضل المعلمين والمختصين ذوي الخبرة والشغف بالتعليم والتربية.</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-building-check"></i>
+                    </div>
+                    <h5 class="feature-title">بيئة آمنة</h5>
+                    <p class="feature-desc">مرافق حديثة ومتكاملة توفر بيئة آمنة ومحفزة للتعلم والإبداع.</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="bi bi-trophy-fill"></i>
+                    </div>
+                    <h5 class="feature-title">أنشطة متنوعة</h5>
+                    <p class="feature-desc">برامج أنشطة لا منهجية ترياضية وثقافية وفنية لتنمية مواهب الطلاب.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ====== STATS SECTION ====== -->
+<section class="stats-section">
+    <div class="container">
+        <div class="row g-4 justify-content-center">
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card">
+                    <i class="bi bi-person-fill stat-icon"></i>
+                    <div class="stat-number counter-animate">{{ stats.students }}</div>
+                    <div class="stat-label">إجمالي الطلاب</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card">
+                    <i class="bi bi-person-badge-fill stat-icon"></i>
+                    <div class="stat-number counter-animate">{{ stats.teachers }}</div>
+                    <div class="stat-label">معلم ومعلمة</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card">
+                    <i class="bi bi-book-fill stat-icon"></i>
+                    <div class="stat-number counter-animate">{{ stats.subjects }}</div>
+                    <div class="stat-label">مادة دراسية</div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card">
+                    <i class="bi bi-calendar-check-fill stat-icon"></i>
+                    <div class="stat-number">20+</div>
+                    <div class="stat-label">سنة من التميز</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ====== NEWS SECTION ====== -->
+{% if news_list %}
+<section class="news-section">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-end mb-5 flex-wrap gap-3">
+            <div>
+                <span class="section-badge">آخر الأخبار</span>
+                <h2 class="section-title mb-0">أخبار ومستجدات</h2>
+            </div>
+            <a href="{{ url_for('news_page') }}" class="btn btn-outline-primary">
+                عرض جميع الأخبار <i class="bi bi-arrow-left ms-2"></i>
+            </a>
+        </div>
+        <div class="row g-4">
+            {% for news in news_list %}
+            <div class="col-lg-4 col-md-6">
+                <div class="news-card h-100">
+                    {% if news.image_url %}
+                        <img src="{{ news.image_url }}" alt="{{ news.title }}" class="card-img">
+                    {% else %}
+                        <div class="card-img bg-primary-soft d-flex align-items-center justify-content-center">
+                            <i class="bi bi-newspaper fs-1 text-primary"></i>
+                        </div>
+                    {% endif %}
+                    <div class="card-body">
+                        <span class="card-category">{{ news.category }}</span>
+                        <h5 class="card-title">{{ news.title }}</h5>
+                        <p class="card-text">{{ news.content[:100] }}...</p>
+                        <small class="card-date">
+                            <i class="bi bi-calendar3 me-1"></i>
+                            {{ news.created_at.strftime('%Y-%m-%d') }}
+                        </small>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- ====== ACTIVITIES SECTION ====== -->
+{% if activities_list %}
+<section class="activities-section">
+    <div class="container">
+        <div class="d-flex justify-content-between align-items-end mb-5 flex-wrap gap-3">
+            <div>
+                <span class="section-badge">الأنشطة</span>
+                <h2 class="section-title mb-0">أنشطتنا وفعالياتنا</h2>
+            </div>
+            <a href="{{ url_for('activities_page') }}" class="btn btn-outline-primary">
+                عرض جميع الأنشطة <i class="bi bi-arrow-left ms-2"></i>
+            </a>
+        </div>
+        <div class="row g-4">
+            {% for activity in activities_list %}
+            <div class="col-lg-3 col-md-6">
+                <div class="activity-img-card">
+                    {% if activity.image_url %}
+                        <img src="{{ activity.image_url }}" alt="{{ activity.title }}">
+                    {% else %}
+                        <div class="w-100 h-100 bg-primary-soft d-flex align-items-center justify-content-center">
+                            <i class="bi bi-stars fs-1 text-primary"></i>
+                        </div>
+                    {% endif %}
+                    <div class="activity-overlay">
+                        <span class="activity-title">{{ activity.title }}</span>
+                    </div>
+                    <span class="activity-category-badge">{{ activity.category }}</span>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+
+<!-- ====== WHY US SECTION ====== -->
+<section class="why-us-section">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <span class="section-badge">ميزاتنا</span>
+                <h2 class="section-title">ما يميزنا عن غيرنا</h2>
+                <p class="text-secondary mb-4">نسعى دائماً لتقديم أفضل تجربة تعليمية بأحدث الأساليب والمناهج العلمية.</p>
+                <div class="why-card">
+                    <div class="why-icon"><i class="bi bi-check-circle-fill"></i></div>
+                    <div class="why-text">
+                        <h6>مناهج دولية معتمدة</h6>
+                        <p>مناهج دراسية معتمدة دولياً تضمن مستوى تعليمياً عالياً.</p>
+                    </div>
+                </div>
+                <div class="why-card">
+                    <div class="why-icon"><i class="bi bi-laptop-fill"></i></div>
+                    <div class="why-text">
+                        <h6>تعليم رقمي متكامل</h6>
+                        <p>نظام إدارة تعليمي إلكتروني يربط الطلاب والمعلمين وأولياء الأمور.</p>
+                    </div>
+                </div>
+                <div class="why-card">
+                    <div class="why-icon"><i class="bi bi-heart-fill"></i></div>
+                    <div class="why-text">
+                        <h6>اهتمام فردي بكل طالب</h6>
+                        <p>متابعة شخصية لكل طالب لضمان تقدمه الأكاديمي والشخصي.</p>
+                    </div>
+                </div>
+                <div class="why-card">
+                    <div class="why-icon"><i class="bi bi-globe2"></i></div>
+                    <div class="why-text">
+                        <h6>شراكات دولية</h6>
+                        <p>شراكات مع مؤسسات تعليمية دولية مرموقة لإثراء التجربة التعليمية.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="row g-3">
+                    <div class="col-6">
+                        <img src="https://images.pexels.com/photos/5905502/pexels-photo-5905502.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=300&w=400"
+                             alt="" class="img-fluid rounded-4 shadow">
+                    </div>
+                    <div class="col-6 mt-4">
+                        <img src="https://images.pexels.com/photos/37898351/pexels-photo-37898351.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=300&w=400"
+                             alt="" class="img-fluid rounded-4 shadow">
+                    </div>
+                    <div class="col-12">
+                        <div class="d-flex gap-3 bg-primary text-white p-4 rounded-4 align-items-center">
+                            <i class="bi bi-award-fill fs-2"></i>
+                            <div>
+                                <strong class="d-block fs-5">جائزة التميز التعليمي</strong>
+                                <small class="opacity-75">حاصلون على أكثر من 15 جائزة في التميز التعليمي</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ====== CTA SECTION ====== -->
+<section class="cta-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8 text-center">
+                <h2 class="section-title text-white mb-3">انضم إلى مجتمعنا التعليمي</h2>
+                <p class="text-white opacity-75 mb-5 fs-5">
+                    نحن نرحب بكل طالب يسعى للتميز والنجاح. سجّل اليوم وابدأ رحلتك نحو مستقبل مشرق.
+                </p>
+                <div class="d-flex gap-3 justify-content-center flex-wrap">
+                    <a href="{{ url_for('contact') }}" class="btn btn-light btn-lg px-5 fw-bold">
+                        <i class="bi bi-telephone-fill me-2"></i>تواصل معنا الآن
+                    </a>
+                    <a href="{{ url_for('login') }}" class="btn btn-outline-light btn-lg px-5">
+                        <i class="bi bi-box-arrow-in-right me-2"></i>تسجيل الدخول
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
