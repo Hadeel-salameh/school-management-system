@@ -326,13 +326,3 @@ class Announcement(db.Model):
         return f'<Announcement {self.title}>'
 
 
-class News(db.Model):
-    __tablename__ = 'news'
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(200), nullable=False)
-    content = db.Column(db.Text, nullable=False)
-    category = db.Column(db.String(50), default='عام')
-    image_url = db.Column(db.String(500), nullable=True)
-    author_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
-    is_published = db.Column(db.Boolean, default=True)
-    created_at = db.Column(db
