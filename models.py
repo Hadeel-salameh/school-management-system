@@ -206,7 +206,7 @@ class Grade(db.Model):
             return 'danger'
 
     def __repr__(self):
-        return f'<Grade {self.student_id} - {self.subject_id}: {self.score}>'
+        return f'<Grade {self.student_id}-{self.subject_id}: {self.score}>'
 
 
 class Attendance(db.Model):
@@ -220,7 +220,7 @@ class Attendance(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     def __repr__(self):
-        return f'<Attendance {self.student_id} - {self.date}: {self.status}>'
+        return f'<Attendance {self.student_id} {self.date}: {self.status}>'
 
 
 class Assignment(db.Model):
@@ -252,7 +252,7 @@ class AssignmentSubmission(db.Model):
     status = db.Column(db.String(20), default='pending')  # pending, submitted, graded
 
     def __repr__(self):
-        return f'<Submission {self.assignment_id} - {self.student_id}>'
+        return f'<Submission {self.assignment_id}-{self.student_id}>'
 
 
 class Exam(db.Model):
@@ -301,7 +301,7 @@ class Schedule(db.Model):
         return self.DAY_NAMES.get(self.day_of_week, '')
 
     def __repr__(self):
-        return f'<Schedule {self.class_id} - {self.subject_id}>'
+        return f'<Schedule {self.class_id}-{self.subject_id}>'
 
 
 class Announcement(db.Model):
@@ -335,24 +335,4 @@ class News(db.Model):
     image_url = db.Column(db.String(500), nullable=True)
     author_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
     is_published = db.Column(db.Boolean, default=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-
-    author = db.relationship('User', backref='news')
-
-    def __repr__(self):
-        return f'<News {self.title}>'
-
-
-class Activity(db.Model):
-    __tablename__ = 'activities'
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(200), nullable=False)
-    description = db.Column(db.Text, nullable=True)
-    category = db.Column(db.String(50), default='رياضي')
-    image_url = db.Column(db.String(500), nullable=True)
-    activity_date = db.Column(db.Date, nullable=True)
-    is_active = db.Column(db.Boolean, default=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-
-    def __repr__(self):
-        return f'<Activity {self.title}>'
+    created_at = db.Column(db
