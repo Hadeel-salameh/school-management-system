@@ -4,14 +4,15 @@ from flask_wtf.csrf import CSRFProtect, generate_csrf
 from functools import wraps
 from datetime import datetime, date
 import os
+from werkzeug.security import generate_password_hash
 
 from config import Config
 from models import (db, User, Student, Teacher, Subject, Class, Grade,
                     Attendance, Assignment, AssignmentSubmission, Exam,
                     Schedule, Announcement, News, Activity)
 from forms import (LoginForm, StudentForm, TeacherForm, ClassForm, SubjectForm,
-                   GradeForm, AttendanceForm, AnnouncementForm, ExamForm,
-                   AssignmentForm, UserForm, ContactForm)
+                    GradeForm, AttendanceForm, AnnouncementForm, ExamForm,
+                    AssignmentForm, UserForm, ContactForm)
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -21,8 +22,42 @@ csrf = CSRFProtect(app)
 os.makedirs(os.path.join(app.root_path, 'instance'), exist_ok=True)
 
 db.init_app(app)
+
+# إنشاء الجداول والحسابات التجريبية تلقائياً عند إقلاع التطبيق
 with app.app_context():
     db.create_all()
+    
+    # 1. إنشاء حساب المدير إذا لم يكن موجوداً
+    if not User.query.filter_by(username="admin").first():
+        admin = User(
+            username="admin",
+            email="admin@school.com",
+            password=generate_password_hash("admin123"),
+            role="admin"
+        )
+        db.session.add(admin)
+
+    # 2. إنشاء حساب المعلم التجريبي إذا لم يكن موجوداً
+    if not User.query.filter_by(username="teacher_t001").first():
+        teacher = User(
+            username="teacher_t001",
+            email="teacher@school.com",
+            password=generate_password_hash("teacher123"),
+            role="teacher"
+        )
+        db.session.add(teacher)
+
+    # 3. إنشاء حساب الطالب التجريبي إذا لم يكن موجوداً
+    if not User.query.filter_by(username="student_s001").first():
+        student = User(
+            username="student_s001",
+            email="student@school.com",
+            password=generate_password_hash("student123"),
+            role="student"
+        )
+        db.session.add(student)
+
+    db.session.commit()
 
 
 login_manager = LoginManager()
