@@ -27,49 +27,25 @@ db.init_app(app)
 with app.app_context():
     db.create_all()
     
-    # 1. إنشاء حساب المدير إذا لم يكن موجوداً
+    # 1. إنشاء حساب المدير
     if not User.query.filter_by(username="admin").first():
-        admin = User(
-            username="admin",
-            email="admin@school.com",
-            password=generate_password_hash("admin123"),
-            role="admin"
-        )
+        admin = User(username="admin", email="admin@school.com", role="admin")
+        admin.set_password("admin123")
         db.session.add(admin)
 
-    # 2. إنشاء حساب المعلم التجريبي إذا لم يكن موجوداً
+    # 2. إنشاء حساب المعلم التجريبي
     if not User.query.filter_by(username="teacher_t001").first():
-        teacher = User(
-            username="teacher_t001",
-            email="teacher@school.com",
-            password=generate_password_hash("teacher123"),
-            role="teacher"
-        )
+        teacher = User(username="teacher_t001", email="teacher@school.com", role="teacher")
+        teacher.set_password("teacher123")
         db.session.add(teacher)
 
-    # 3. إنشاء حساب الطالب التجريبي إذا لم يكن موجوداً
+    # 3. إنشاء حساب الطالب التجريبي
     if not User.query.filter_by(username="student_s001").first():
-        student = User(
-            username="student_s001",
-            email="student@school.com",
-            password=generate_password_hash("student123"),
-            role="student"
-        )
+        student = User(username="student_s001", email="student@school.com", role="student")
+        student.set_password("student123")
         db.session.add(student)
 
     db.session.commit()
-
-
-login_manager = LoginManager()
-login_manager.init_app(app)
-login_manager.login_view = 'login'
-login_manager.login_message = 'الرجاء تسجيل الدخول للوصول إلى هذه الصفحة'
-login_manager.login_message_category = 'warning'
-
-
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
 
 
 # ─── Role Decorators ─────────────────────────────────────────────────────────
