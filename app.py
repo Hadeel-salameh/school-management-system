@@ -21,6 +21,9 @@ csrf = CSRFProtect(app)
 os.makedirs(os.path.join(app.root_path, 'instance'), exist_ok=True)
 
 db.init_app(app)
+with app.app_context():
+    db.create_all()
+
 
 login_manager = LoginManager()
 login_manager.init_app(app)
