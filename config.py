@@ -5,7 +5,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'مفتاح-سري-جدا-للمدرسة-2024'
     
-    # معالجة رابط قاعدة البيانات ليتوافق تماماً مع psycopg2
+    # إجبار SQLAlchemy على استخدام psycopg2 حصرياً ومنع البحث عن أي مشغل آخر
     database_url = os.environ.get('DATABASE_URL')
     if database_url:
         if database_url.startswith("postgres://"):
