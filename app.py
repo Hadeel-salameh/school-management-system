@@ -23,27 +23,29 @@ os.makedirs(os.path.join(app.root_path, 'instance'), exist_ok=True)
 
 db.init_app(app)
 
-# إنشاء الجداول والحسابات التجريبية تلقائياً عند إقلاع التطبيق
 with app.app_context():
     db.create_all()
     
-    # 1. إنشاء حساب المدير
-    if not User.query.filter_by(username="admin").first():
+    # 1. المدير (إنشاء أو تحديث كلمة المرور)
+    admin = User.query.filter_by(username="admin").first()
+    if not admin:
         admin = User(username="admin", email="admin@school.com", role="admin")
-        admin.set_password("admin123")
         db.session.add(admin)
+    admin.set_password("admin123")
 
-    # 2. إنشاء حساب المعلم التجريبي
-    if not User.query.filter_by(username="teacher_t001").first():
+    # 2. المعلم (إنشاء أو تحديث كلمة المرور)
+    teacher = User.query.filter_by(username="teacher_t001").first()
+    if not teacher:
         teacher = User(username="teacher_t001", email="teacher@school.com", role="teacher")
-        teacher.set_password("teacher123")
         db.session.add(teacher)
+    teacher.set_password("teacher123")
 
-    # 3. إنشاء حساب الطالب التجريبي
-    if not User.query.filter_by(username="student_s001").first():
+    # 3. الطالب (إنشاء أو تحديث كلمة المرور)
+    student = User.query.filter_by(username="student_s001").first()
+    if not student:
         student = User(username="student_s001", email="student@school.com", role="student")
-        student.set_password("student123")
         db.session.add(student)
+    student.set_password("student123")
 
     db.session.commit()
 
