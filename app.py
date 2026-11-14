@@ -4,24 +4,16 @@ from flask_wtf.csrf import CSRFProtect, generate_csrf
 from functools import wraps
 from datetime import datetime, date
 import os
-from werkzeug.security import generate_password_hash
 
 from config import Config
 from models import (db, User, Student, Teacher, Subject, Class, Grade,
                     Attendance, Assignment, AssignmentSubmission, Exam,
                     Schedule, Announcement, News, Activity)
 from forms import (LoginForm, StudentForm, TeacherForm, ClassForm, SubjectForm,
-                    GradeForm, AttendanceForm, AnnouncementForm, ExamForm,
-                    AssignmentForm, UserForm, ContactForm)
+                   GradeForm, AttendanceForm, AnnouncementForm, ExamForm,
+                   AssignmentForm, UserForm, ContactForm)
 
 app = Flask(__name__)
-login_manager = LoginManager()
-login_manager.init_app(app)
-login_manager.login_view = 'login'
-
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
 app.config.from_object(Config)
 csrf = CSRFProtect(app)
 
@@ -30,31 +22,16 @@ os.makedirs(os.path.join(app.root_path, 'instance'), exist_ok=True)
 
 db.init_app(app)
 
-with app.app_context():
-    db.create_all()
-    
-    # 1. المدير (إنشاء أو تحديث كلمة المرور)
-    admin = User.query.filter_by(username="admin").first()
-    if not admin:
-        admin = User(username="admin", email="admin@school.com", role="admin")
-        db.session.add(admin)
-    admin.set_password("admin123")
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
+login_manager.login_message = 'الرجاء تسجيل الدخول للوصول إلى هذه الصفحة'
+login_manager.login_message_category = 'warning'
 
-    # 2. المعلم (إنشاء أو تحديث كلمة المرور)
-    teacher = User.query.filter_by(username="teacher_t001").first()
-    if not teacher:
-        teacher = User(username="teacher_t001", email="teacher@school.com", role="teacher")
-        db.session.add(teacher)
-    teacher.set_password("teacher123")
 
-    # 3. الطالب (إنشاء أو تحديث كلمة المرور)
-    student = User.query.filter_by(username="student_s001").first()
-    if not student:
-        student = User(username="student_s001", email="student@school.com", role="student")
-        db.session.add(student)
-    student.set_password("student123")
-
-    db.session.commit()
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
 
 # ─── Role Decorators ─────────────────────────────────────────────────────────
