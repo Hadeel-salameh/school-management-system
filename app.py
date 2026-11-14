@@ -21,6 +21,69 @@ csrf = CSRFProtect(app)
 os.makedirs(os.path.join(app.root_path, 'instance'), exist_ok=True)
 
 db.init_app(app)
+with app.app_context():
+    db.create_all()
+    
+    # 1. إنشاء حساب المدير (Admin)
+    if not User.query.filter_by(username='admin').first():
+        admin = User(
+            username='admin',
+            email='admin@school.com',
+            role='admin',
+            is_active=True
+        )
+        admin.set_password('admin123')
+        db.session.add(admin)
+        db.session.commit()
+
+    # 2. إنشاء حساب المعلم التجريبي المطابق للواجهة (teacher_t001)
+    teacher_user = User.query.filter_by(username='teacher_t001').first()
+    if not teacher_user:
+        teacher_user = User(
+            username='teacher_t001',
+            email='teacher@school.com',
+            role='teacher',
+            is_active=True
+        )
+        teacher_user.set_password('teacher123')
+        db.session.add(teacher_user)
+        db.session.flush()
+
+        if not Teacher.query.filter_by(user_id=teacher_user.id).first():
+            teacher = Teacher(
+                user_id=teacher_user.id,
+                teacher_id='t001',
+                first_name='أحمد',
+                last_name='المعلم',
+                specialization='رياضيات',
+                is_active=True
+            )
+            db.session.add(teacher)
+            db.session.commit()
+
+    # 3. إنشاء حساب الطالب التجريبي المطابق للواجهة (student_s001)
+    student_user = User.query.filter_by(username='student_s001').first()
+    if not student_user:
+        student_user = User(
+            username='student_s001',
+            email='student@school.com',
+            role='student',
+            is_active=True
+        )
+        student_user.set_password('student123')
+        db.session.add(student_user)
+        db.session.flush()
+
+        if not Student.query.filter_by(user_id=student_user.id).first():
+            student = Student(
+                user_id=student_user.id,
+                student_id='s001',
+                first_name='محمد',
+                last_name='الطالب',
+                is_active=True
+            )
+            db.session.add(student)
+            db.session.commit()
 
 login_manager = LoginManager()
 login_manager.init_app(app)
